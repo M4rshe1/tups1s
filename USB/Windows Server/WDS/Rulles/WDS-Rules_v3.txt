@@ -17,5 +17,5 @@ SkipLocaleSeledion=YES
 JoinDornain=gmm.local
 
 Keyboard Locale=de-CH
-TmeToneName=GMT+1
+TmeZoneName=GMT+1
 EvertSavice=http://SV-007-WDS:9800

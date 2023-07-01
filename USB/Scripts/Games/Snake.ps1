@@ -1,0 +1,29 @@
+$w = ($q = ($u = $Host.UI.RawUi).WindowSize).Width - 1;
+$u.CursorSize = 0; $a = 0..($q.Height - 1) | ForEach-Object { $i = $_;
+    0..$w | ForEach-Object { 
+        @{ X = $_; Y = $i
+        }
+    }
+};
+$s = ($f = $n = $a[($x = $y = $d = 3)]),$n;
+function Z ($c,$t) {
+    $u.CursorPosition = $c;
+    Write-Host $t -N }
+while (0..$w -contains $x -and ($b = $x + $y * ($w + 1)) -ge 0 -and ($n = $a[$b]) -and $s -notcontains $n) {
+    Z $n X;
+    sleep -M 99;
+    while ($u.KeyAvailable -and 1..4 -contains ($k = $u.ReadKey(15).VirtualKeyCode - 36) -and $d % 2 -ne $k % 2) {
+        $d = $k
+    }
+    switch ($d) {
+        1 {
+        -- $x 
+         }
+        2 {
+        -- $y
+        }
+        3 {
+        ++ $x 
+        } 4 {++ $y } } $s += $n;
+if ($s -contains $f) { $f = $a | random } else { $p,$s = $s;
+Z $p ' ' } Z $f O }

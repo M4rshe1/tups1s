@@ -1,0 +1,9 @@
+HKEY_LOCAL_MACHINE\SYSTEM\Setup
+
+erstelle Schlüssel "LabConfig"
+erstelle "DWORD (32-bit) Value" "BypassTPMCheck"
+erstelle "DWORD (32-bit) Value" "BypassRAMCheck"
+erstelle "DWORD (32-bit) Value" "BypassSecureBootCheck"
+
+wifi Bypass cmd:
+OOBE\BYPASSNRO

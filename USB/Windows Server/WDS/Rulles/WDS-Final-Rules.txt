@@ -1,0 +1,34 @@
+[Settings]
+Priority=Default
+Properties=MyCustomProperty
+
+[Default]
+;Skip screens that arent required
+SkipComputerBackup=YES
+OSInstall=YES
+SkipAppsOnUpgrade=YES
+SkipProductKey=YES
+SkipUserData=YES
+SkipLocaleSelection=YES
+SkipTimeZone=YES
+;SkipApplications=YES
+SkipSummary=YES
+SkipCapture=YES
+SkipFinalSummary=YES
+HideShell=YES
+SkipAdminPassword=YES
+AdminPassword=Bananen.123
+OSDComputerName=PC-#Left("%SerialNumber%",12)#
+
+JoinDomain=gmm.local
+;MachineObject=OU=NewMachines,DC=gmm,DC=local
+
+;Set the location and time zone
+KeyboardLocale=0807:00000807
+UserLocale=de-CH
+UILanguage=en-US
+TimeZoneName=GMT+1 Standard Time
+EventService=http://SV-007-WDS:9800
+
+;Set the final action
+FinishAction=REBOOT

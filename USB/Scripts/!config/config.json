@@ -1,0 +1,32 @@
+﻿{
+    "ConfigServerProfiles":  [
+                                 {
+                                     "Gateway":  "10.0.0.1",
+                                     "Domain":  "gmm.local",
+                                     "DomainUser":  "Administrator@gmm.local",
+                                     "DNS":  "10.0.1.3, 10.0.1.4",
+                                     "IPRange":  "10.0.xxx.xxx",
+                                     "MaskBits":  17
+                                 },
+                                 {
+                                     "Gateway":  "0.0.0.0",
+                                     "Domain":  "domain.local",
+                                     "DomainUser":  "Administrator@domain.local",
+                                     "DNS":  "0.0.0.0",
+                                     "IPRange":  "xxx.xxx.xxx.xxx",
+                                     "MaskBits":  0
+                                 },
+                                 {
+                                     "Gateway":  "0.0.0.0",
+                                     "Domain":  "domain.local",
+                                     "DomainUser":  "Administrator@domain.local",
+                                     "DNS":  "0.0.0.0",
+                                     "IPRange":  "xxx.xxx.xxx.xxx",
+                                     "MaskBits":  0
+                                 }
+                             ],
+    "settings":  {
+                     "DefaultDomain":  "KMU-one.local",
+                     "color":  "09"
+                 }
+}

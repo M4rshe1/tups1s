@@ -1,0 +1,32 @@
+﻿{
+    "ConfigServerProfiles": [
+        {
+            "Gateway": "0.0.0.0",
+            "Domain": "domain.local",
+            "DomainUser": "Administrator@domain.local",
+            "DNS": "0.0.0.0",
+            "IPRange": "xxx.xxx.xxx.xxx",
+            "MaskBits": 0
+        },
+        {
+            "Gateway": "0.0.0.0",
+            "Domain": "domain.local",
+            "DomainUser": "Administrator@domain.local",
+            "DNS": "0.0.0.0",
+            "IPRange": "xxx.xxx.xxx.xxx",
+            "MaskBits": 0
+        },
+        {
+            "Gateway": "0.0.0.0",
+            "Domain": "domain.local",
+            "DomainUser": "Administrator@domain.local",
+            "DNS": "0.0.0.0",
+            "IPRange": "xxx.xxx.xxx.xxx",
+            "MaskBits": 0
+        }
+    ],
+    "settings": {
+        "DefaultDomain": "domain.local",
+        "color": "09"
+    }
+}

@@ -1,0 +1,14 @@
+[Settings]
+Priority=Default
+
+[Default]
+DeployRoot=\\SV-007-WDS\DeploymentShare$
+
+UserID=Administrator
+UserDomain=gmm.local
+UserPassword=Bananen.123
+
+KeyboardLocalePE=0807:00000807
+
+SkipBDDWelcome=YES
+

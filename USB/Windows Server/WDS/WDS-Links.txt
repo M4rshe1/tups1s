@@ -1,0 +1,20 @@
+https://www.microsoft.com/en-us/download/details.aspx?id=54259
+https://learn.microsoft.com/en-us/windows-hardware/get-started/adk-install
+- adk + add-on von 2004
+https://youtu.be/wIp2YTNVjHk
+https://youtu.be/OHHnQgLO0n4
+
+1. WDS Rolle installieren
+2. WDS Konfigourieren
+3. MDT installieren
+4. adksetup.exe
+5. adkwinpsetup.exe
+
+Troubleshooting
+
+net use \\<computername>\deploymentshare$
+Network Driver
+https://social.technet.microsoft.com/Forums/en-US/cb2c8532-26fb-43d3-83c5-fb3e6d65f49b/trouble-booting-to-mdt-keep-getting-the-command-line?forum=mdt
+MININT folder
+Disk wipe before diskpart
+https://social.technet.microsoft.com/Forums/WINDOWS/en-US/5b6dc30d-3a50-4988-aa0b-a6f516a02c4c/active-directory-import-with-csv-to-different-ous?forum=ITCG

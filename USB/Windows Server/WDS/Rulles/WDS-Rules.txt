@@ -1,0 +1,62 @@
+[Settings]
+Priority=Default
+Properties=MyCustomProperty
+
+[Default]
+;LiteTouch or ZeroTouch
+;Change SkipComputerName and SkipDomainMembership from NO to YES
+;and uncomment OSDComputername and MachineObjectOU to make this ZeroTouch 
+SkipComputerName=YES
+SkipDomainMembership=YES
+;OSDComputername=PC-#Right("%SerialNumber%",5)#
+;MachineObjectOU=DC=gmm,DC=local
+
+;Set local admin details
+SkipAdminPassword=YES
+AdminPassword=Bananen.123
+
+;Specify the domain to join and credentials
+JoinDomain=gmm.local
+DomainAdmin=Administrator
+DomainAdminDomain=gmm.local
+DomainAdminPassword=Bananen.123
+
+;Set the task sequence
+SkipTaskSequence=YES
+TaskSequenceID=0001
+
+;Set the name at the top dynamically
+;_SMSTSORGNAME=%TaskSequenceName% on %OSDComputername%
+
+;Set the location and time zone
+KeyboardLocale=0807:00000807
+UserLocale=de-CH
+UILanguage=de-CH
+TimeZoneName=GMT+1 Standard Time
+
+;Skip screens that arent required
+SkipComputerBackup=YES
+OSInstall=YES
+SkipAppsOnUpgrade=NO
+SkipProductKey=YES
+SkipUserData=YES
+SkipLocaleSelection=YES
+SkipTimeZone=YES
+SkipApplications=YES
+SkipSummary=YES
+SkipCapture=YES
+SkipFinalSummary=YES
+HideShell=YES
+
+;Apply best practice security policies onto the machine
+;ApplyGPOPack=YES
+
+;Enable Bitlocker Config
+;SkipBitLocker=YES
+;BDEInstallSuppress=NO
+;BDEWaitForEncryption=FALSE
+;BDEInstall=TPM
+;BDERecoveryKey=AD
+
+;Set the final action
+FinishAction=REBOOT

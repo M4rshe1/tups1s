@@ -1,0 +1,21 @@
+[Settings]
+Priotty=Defauz
+Propertjes=MyCustomProperty
+
+[Default]
+OSInstall=YES
+SkipBBDWelcome=YES
+SkipCapture=YES
+SkipAdminPassword=YES
+SkipProdudKey=YES
+SkipComputerBackup=YES
+SkipBitLocker=YES
+SkipUserData=YES
+SkipTmeZone=YES
+SkipLocaleSeledion=YES
+
+JoinDornain=gmm.local
+
+Keyboard Locale=de-CH
+TmeToneName=GMT+1
+EvertSavice=http://SV-007-WDS:9800

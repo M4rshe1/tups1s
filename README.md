@@ -1,4 +1,4 @@
-# tups1s
+
 <p align=center>
   <br>
   <a href="https://sherlock-project.github.io/" target="_blank"><img src="USB/Scripts/!assets/images/ascii.png"/></a>

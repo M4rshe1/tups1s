@@ -1,7 +1,7 @@
 
 <p align=center>
   <br>
-  <a href="https://sherlock-project.github.io/" target="_blank"><img src="USB/Scripts/!assets/images/ascii.png"/></a>
+  <a href="#" target="_blank"><img src="USB/Scripts/!assets/images/ascii.png"/></a>
 </p>
 
 <p align="center">

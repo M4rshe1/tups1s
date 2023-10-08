@@ -13,7 +13,8 @@ function Show-Menu {
     Write-Host " + Windows Server   (3)"
     Write-Host " + Games            (4)"
     Write-Host " + Script Generator (5)"
-    Write-Host " + Settings         (6)"
+    Write-Host " + Network          (6)"
+    Write-Host " + Settings         (7)"
     Write-Host " - Exit             (0)"
     Write-Host
     $select = Read-Host "Select"
@@ -25,21 +26,80 @@ function Show-Menu {
         "3" { Show-WindowsServerMenu }
         "4" { Show-GamesMenu }
         "5" { Show-GeneratorMenu }
-        "6" { Show-SettingMenu }
+        "6" { Show-NetworkMenu }
+        "7" { Show-SettingMenu }
         default { Show-Menu }
     }
 }
 
-# Update USB ---------------------------------------------------------------------------------------------------------------------------------------------
+# -------------------------------------------------- #
+#                   Update USB                       #
+# -------------------------------------------------- #
+
+#function Update-USB {
+#    Clear-Host
+#    Write-Host "Updating USB..."
+#    cmd.exe -/c ".\USB\update_USB.bat"
+#    Show-Menu
+#}
+#update with git
+function CheckGit {
+    Clear-Host
+    Write-Host "Checking Git..."
+    $Git = Get-Command git -ErrorAction SilentlyContinue
+    if ($null -eq $Git) {
+        installGit = Read-Host "Git not found. Install Git? (Y/N)"
+        if ($installGit -eq "Y") {
+            if (!(Test-Path -Path 'C:\ProgramData\chocolatey\bin\choco.exe')) {
+                Write-Host "Installing Chocolatey..."
+                Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
+            }
+
+            # Install Git using Chocolatey
+            Write-Host "Installing Git..."
+            choco install git -y
+
+            # Check if Git is installed
+            if (!(Test-Path -Path 'C:\Program Files\Git\cmd\git.exe')) {
+                Write-Host "Git installation failed."
+                exit 1
+            }
+
+            Write-Host "Git has been installed successfully."
+            exit 0
+        }
+        else {
+            Clear-Host
+            Write-Host "Git not found. Please install Git."
+            pause
+            return 1
+        }
+    }
+    else {
+        Write-Host "Git found"
+        pause
+    }
+}
+
+
 
 function Update-USB {
     Clear-Host
+    if (CheckGit -eq 1) {
+        return
+    }
     Write-Host "Updating USB..."
-    cmd.exe -/c ".\USB\update_USB.bat"
+    git pull
     Show-Menu
 }
 
-# Windows Menu ---------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+# -------------------------------------------------- #
+#                   Windows Menu                     #
+# -------------------------------------------------- #
 
 function Show-WindowsMenu {
     Clear-Host
@@ -47,6 +107,7 @@ function Show-WindowsMenu {
     Write-Host
     Write-Host " + Hack Windows    (1)"
     Write-Host " + Regedit         (2)"
+    Write-Host " * Use CTT Tool    (3)"
     Write-Host " - Back            (0)"
     Write-Host
     $select5 = Read-Host "Select"
@@ -55,6 +116,7 @@ function Show-WindowsMenu {
         "0" { Show-Menu }
         "1" { Show-HackWindows }
         "2" { Show-RegEdit }
+        "3" { Show-CTT }
         default { Show-WindowsMenu }
     }
 }
@@ -120,7 +182,15 @@ function Win10KontextMenu {
     cmd.exe ".\USB\PC Hacks\kontexmenu.bat"
     pause
 }
-# Windows Server Menu ---------------------------------------------------------------------------------------------------------------------------------------------
+
+function Show-CTT {
+    Invoke-RestMethod christitus.com/win | Invoke-Expression
+}
+
+
+# -------------------------------------------------- #
+#               Windows Server Menu                  #
+# -------------------------------------------------- #
 function Show-WindowsServerMenu {
     Clear-Host
     Write-Host "What would you like to do?"
@@ -325,7 +395,13 @@ function Set-GPO_SetWallpaper {
     
 }
 
-# Games Menu ---------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+# -------------------------------------------------- #
+#                   Games Menu                       #
+# -------------------------------------------------- #
 
 function Show-GamesMenu {
     Clear-Host
@@ -372,7 +448,9 @@ function PlayGuessNum {
     Show-GamesMenu
 }
 
-#Setting Menu ----------------------------------------------------------------------------------------------------------------------------------------------------------
+# -------------------------------------------------- #
+#                  Settings Menu                     #
+# -------------------------------------------------- #
 function Show-SettingMenu {
     $CrrentConfigFile = ".\USB\Scripts\!Config\config.json"
     $CurrentConfigFileContent = Get-Content -Raw $CrrentConfigFile -ErrorAction SilentlyContinue | ConvertFrom-Json 
@@ -424,7 +502,13 @@ function Show-SettingReset {
     Clear-Host
     Show-SettingMenu
 }
-#Setting Menu ----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+# -------------------------------------------------- #
+#                   Network Menu                     #
+# -------------------------------------------------- #
 function Show-GeneratorMenu {
     Clear-Host
     Write-Host "Script Generator"

@@ -25,7 +25,6 @@ function ping-device($dtp, $pd)
         "min" = 0
         "max" = 0
         "times" = @()
-        "timestamps" = @()
     }
 
     Write-Host ""
@@ -49,7 +48,6 @@ function ping-device($dtp, $pd)
         {
             $ping_results["times"] += [int]$all_results_time
         }
-        $ping_results["timestamps"] += $ping_time
 
         $totalLength = [math]::round(($EndTime - $StartTime).TotalMilliseconds / 1000, 0)
         $completedLength = [math]::round(((Get-Date) - $StartTime).TotalMilliseconds / 1000 / $totalLength * 50, 0)
@@ -105,15 +103,31 @@ function Show-Result($all_results, $device)
 
     #    $response_graph = @()
     #    ForEach-Object $longest["times"] { $response_graph += "" }
-    Write-Host "`nResponse Graph ((0 <10) <20 <30 <60 <120 <):"
+    Write-Host "`nResponse Graph ((" -NoNewline
+    Write-Host "0 " -NoNewline -ForegroundColor Red
+    Write-Host " <10 <20 <30" -NoNewline -ForegroundColor Green
+    Write-Host " <60" -NoNewline -ForegroundColor Yellow
+    Write-Host " <120 <" -NoNewline -ForegroundColor Red
+    Write-Host ")"
+
 
     for ($i = 0; $i -lt $longest["times"].Length; $i++)
     {
         foreach ($res in $all_results)
         {
+            if ($res["times"].Length -le $i)
+            {
+                Write-Host " ".PadRight(7) -NoNewline
+                Write-Host " ".PadRight(8) -NoNewline
+                if ($all_results[-1] -ne $res)
+                {
+                    Write-Host " | " -NoNewline
+                }
+                continue
+            }
             if ($res["times"][$i] -eq 0)
             {
-                Write-Host "#".PadRight(7) -NoNewline -ForegroundColor Red
+                Write-Host "0".PadRight(7) -NoNewline -ForegroundColor Red
                 Write-Host ": $( $res["times"][$i] )ms".PadRight(8) -NoNewline
             }
             elseif ($res["times"][$i] -lt 10)
@@ -124,27 +138,27 @@ function Show-Result($all_results, $device)
             }
             elseif ($res["times"][$i] -lt 20)
             {
-                Write-Host "#".PadRight(7)  -NoNewline -ForegroundColor Green
+                Write-Host "##".PadRight(7)  -NoNewline -ForegroundColor Green
                 Write-Host ": $( $res["times"][$i] )ms".PadRight(8) -NoNewline
             }
             elseif ($res["times"][$i] -lt 30)
             {
-                Write-Host "#".PadRight(7)  -NoNewline -ForegroundColor Green
+                Write-Host "###".PadRight(7)  -NoNewline -ForegroundColor Green
                 Write-Host ": $( $res["times"][$i] )ms".PadRight(8) -NoNewline
             }
             elseif ($res["times"][$i] -lt 60)
             {
-                Write-Host "#".PadRight(7)  -NoNewline -ForegroundColor Yellow
+                Write-Host "####".PadRight(7)  -NoNewline -ForegroundColor Yellow
                 Write-Host ": $( $res["times"][$i] )ms".PadRight(8) -NoNewline
             }
             elseif ($res["times"][$i] -lt 120)
             {
-                Write-Host "#".PadRight(7)  -NoNewline -ForegroundColor Red
+                Write-Host "#####".PadRight(7)  -NoNewline -ForegroundColor Red
                 Write-Host ": $( $res["times"][$i] )ms".PadRight(8) -NoNewline
             }
             else
             {
-                Write-Host "#".PadRight(7)  -NoNewline -ForegroundColor Red
+                Write-Host "#######".PadRight(7)  -NoNewline -ForegroundColor Red
                 Write-Host ": $( $res["times"][$i] )ms".PadRight(8) -NoNewline
             }
             if ($all_results[-1] -ne $res)
@@ -162,17 +176,13 @@ function Show-Result($all_results, $device)
         {
             if ($i -eq 0)
             {
-                Write-Host "####" -NoNewline -ForegroundColor Red
+                Write-Host "0000" -NoNewline -ForegroundColor Red
             }
             elseif ($i -lt 30)
             {
                 Write-Host "#" -NoNewline -ForegroundColor Green
             }
             elseif ($i -lt 60)
-            {
-                Write-Host "#" -NoNewline -ForegroundColor Yellow
-            }
-            elseif ($i -lt 120)
             {
                 Write-Host "#" -NoNewline -ForegroundColor Yellow
             }

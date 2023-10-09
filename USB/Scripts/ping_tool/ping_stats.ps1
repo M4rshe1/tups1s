@@ -2,7 +2,7 @@
 #                   Settings / Variables                  #
 # ------------------------------------------------------- #
 
-$DEFAULR_DEVICE = "google.com"
+$DEFAULT_DEVICE = "google.com"
 $DEFAULT_PING_DURATION = "20"
 
 # ------------------------------------------------------- #
@@ -181,10 +181,10 @@ function Show-Result($res, $device)
 #                          Main                           #
 # ------------------------------------------------------- #
 
-    $device_to_ping = Read-Host "Enter device to ping (default: $DEFAULR_DEVICE)`n>> "
+    $device_to_ping = Read-Host "Enter device to ping (default: $DEFAULT_DEVICE)`n>> "
     if ($device_to_ping -eq "")
     {
-        $device_to_ping = $DEFAULR_DEVICE
+        $device_to_ping = $DEFAULT_DEVICE
     }
     $ping_duration = Read-Host "Enter ping duration Xm or Xs (default: $DEFAULT_PING_DURATION)`n>> "
     if ($ping_duration -eq "")

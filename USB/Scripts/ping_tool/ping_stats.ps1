@@ -206,13 +206,6 @@ function Show-Result($all_results, $device) {
         $summary[4] += ($i["min"].ToString() + "ms ").PadRight(6)
         $summary[5] += ($i["max"].ToString() + "ms ").PadRight(6)
 
-        # $summary[0] += $i["req"] 
-        # $summary[1] += $i["res"]
-        # $summary[2] += $i["lost"]
-        # $summary[3] += $i["loss"]
-        # $summary[4] += $i["min"]
-        # $summary[5] += $i["max"]
-
         if ($all_results[-1] -ne $i) {
             $summary[0] += " : "
             $summary[1] += " : "
@@ -256,6 +249,7 @@ function Show-Result($all_results, $device) {
 function Show-Resultload($all_results, $device) {
     # $all_results | ConvertTo-Json | Out-File -FilePath "all_ping_results.json" -Encoding UTF8
     # $all_results[0]["loss"] | Out-String
+    clear-host
     $longest = $all_results[0]
     foreach ($i in $all_results) {
         if ($i.times.Length -gt $longest.times.Length) {

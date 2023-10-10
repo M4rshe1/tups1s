@@ -467,7 +467,6 @@ if ($ping_duration -match "^\d+s$") {
     Write-Host "Invalid ping duration: $ping_duration"
     exit
 }
-pause
 Clear-Host
 while ($true) {
     $all_pings = ping-device $device_to_ping $ping_duration

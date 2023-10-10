@@ -36,18 +36,25 @@ function ping-device($dtp, $pd) {
     While ($EndTime -gt (Get-Date)) {
         [int]$ping_results["req"] += 1
         $ping_result = ping $dtp -n 1
-        $ping_result | Out-File -FilePath "output.txt" -Encoding UTF8
-        $encoded_ping_result = [System.Text.Encoding]::UTF8.GetString([System.IO.File]::ReadAllBytes("output.txt"))
-        $lines = $encoded_ping_result -split "`r`n"
-        $all_results_time = $lines[-2] -Split "Maximum = " | Select-Object -Last 1
-        $all_results_time = $all_results_time -Split "ms" | Select-Object -First 1
+#        $ping_result | Out-File -FilePath "output.txt" -Encoding UTF8
+#
+#        $encoded_ping_result = [System.Text.Encoding]::UTF8.GetString([System.IO.File]::ReadAllBytes("output.txt"))
+#        $lines = $encoded_ping_result -split "`r`n"
+        $lines = $ping_result -split "`r`n"
+        $all_results_time = $lines[-1] -Split "Maximum = "
+#        Write-Host $lines[-1]
+#        Write-Host $all_results_time[-1].split("ms")[0].ToString()
+        $ms_result = $all_results_time[-1].split("ms")[0].ToString().trim()
+#        Write-Host $ms_result
+#        $all_results_time = $all_results_time[-1].split("ms")[0]
 
+#        Pause
         #        Write-Host $encoded_ping_result.split("Maximum = ")[1].split("ms")[0] -NoNewline
-        if (-not [int]::TryParse($all_results_time, [ref]$null)) {
+        if (-not [int]::TryParse($ms_result, [ref]$null)) {
             $ping_results["times"] += 0
         }
         else {
-            $ping_results["times"] += [int]$all_results_time
+            $ping_results["times"] += [int]$ms_result
         }
 
         $totalLength = [math]::round(($EndTime - $StartTime).TotalMilliseconds / 1000, 0)

@@ -28,7 +28,7 @@ function ping-device($dtp, $pd) {
         "device" = $dtp
         "starttime" = Get-Date -Format "yyyy.MM.dd HH:mm:ss"
         "endtime" = ""
-        "pingTime" = $pd
+        "pingtime" = $pd
         "avg" = 0
     }
 
@@ -104,172 +104,11 @@ function ping-device($dtp, $pd) {
     return $ping_results
 }
 
-function Show-Result($all_results, $device) {
-    # $all_results | ConvertTo-Json | Out-File -FilePath "all_ping_results.json" -Encoding UTF8
-    # $all_results[0]["loss"] | Out-String
-    $longest = $all_results[0]
-    foreach ($i in $all_results) {
-        if ($i["times"].Length -gt $longest["times"].Length) {
-            $longest = $i
-        }
-    }
-
-
-    #    $response_graph = @()
-    #    ForEach-Object $longest["times"] { $response_graph += "" }
-    Write-Host "`nResponse Graph ((" -NoNewline
-    Write-Host "0 " -NoNewline -ForegroundColor Red
-    Write-Host " <10"  -NoNewline -ForegroundColor Green
-    Write-Host ") " -NoNewline
-    Write-Host "<25" -NoNewline -ForegroundColor Green
-    Write-Host " <40 <60" -NoNewline -ForegroundColor Yellow
-    Write-Host " <120 <" -NoNewline -ForegroundColor Red
-    Write-Host ")"
-
-
-    for ($i = 0; $i -lt $longest["times"].Length; $i++) {
-        foreach ($res in $all_results) {
-            if ($res["times"].Length -le $i) {
-                Write-Host " ".PadRight(7) -NoNewline
-                Write-Host " ".PadRight(8) -NoNewline
-                if ($all_results[-1] -ne $res) {
-                    Write-Host " | " -NoNewline
-                }
-                continue
-            }
-            if ($res["times"][$i] -eq 4000) {
-                Write-Host "0".PadRight(7) -NoNewline -ForegroundColor Red
-                Write-Host ": $( $res["times"][$i] )ms".PadRight(8) -NoNewline
-            }
-            elseif ($res["times"][$i] -lt 10) {
-                Write-Host "#".PadRight(7)  -NoNewline -ForegroundColor Green
-                if ($res["times"][$i] -eq 0) {
-                    Write-Host ": <$( $res["times"][$i] )ms".PadRight(8) -NoNewline
-                }
-                else {
-                    Write-Host ": $( $res["times"][$i] )ms".PadRight(8) -NoNewline
-                }
-
-            }
-            elseif ($res["times"][$i] -lt 25) {
-                Write-Host "##".PadRight(7)  -NoNewline -ForegroundColor Green
-                Write-Host ": $( $res["times"][$i] )ms".PadRight(8) -NoNewline
-            }
-            elseif ($res["times"][$i] -lt 40) {
-                Write-Host "###".PadRight(7)  -NoNewline -ForegroundColor Yellow
-                Write-Host ": $( $res["times"][$i] )ms".PadRight(8) -NoNewline
-            }
-            elseif ($res["times"][$i] -lt 60) {
-                Write-Host "####".PadRight(7)  -NoNewline -ForegroundColor Yellow
-                Write-Host ": $( $res["times"][$i] )ms".PadRight(8) -NoNewline
-            }
-            elseif ($res["times"][$i] -lt 120) {
-                Write-Host "#####".PadRight(7)  -NoNewline -ForegroundColor Red
-                Write-Host ": $( $res["times"][$i] )ms".PadRight(8) -NoNewline
-            }
-            else {
-                Write-Host "######".PadRight(7)  -NoNewline -ForegroundColor Red
-                Write-Host ": $( $res["times"][$i] )ms".PadRight(8) -NoNewline
-            }
-            if ($all_results[-1] -ne $res) {
-                Write-Host " | " -NoNewline
-            }
-        }
-        Write-Host ""
-    }
-
-    Write-Host "`nResponse Graph in Real Time:`n(1000ms = 1 x #)"
-    foreach ($res in $all_results) {
-        foreach ($i in $res["times"]) {
-            if ($i -eq 4000) {
-                Write-Host "0000" -NoNewline -ForegroundColor Red
-            }
-            elseif ($i -lt 20) {
-                Write-Host "#" -NoNewline -ForegroundColor Green
-            }
-            elseif ($i -lt 60) {
-                Write-Host "#" -NoNewline -ForegroundColor Yellow
-            }
-            elseif ($i -lt 1000) {
-                Write-Host "#" -NoNewline -ForegroundColor Red
-            }
-            elseif ($i -lt 2000) {
-                Write-Host "##" -NoNewline -ForegroundColor Red
-            }
-            elseif ($i -lt 3000) {
-                Write-Host "###" -NoNewline -ForegroundColor Red
-            }
-            else {
-                Write-Host "####" -NoNewline -ForegroundColor Yellow
-            }
-        }
-        Write-Host ""
-    }
-    Write-Host "`n"
-
-
-    $summary = @(
-        "  Requests   : "
-        "  Responses  : "
-        "  Lost       : "
-        "  Loss       : "
-        "  Min        : "
-        "  Max        : "
-        "  Avg        : "
-    )
-
-    # $all_results | out-string
-    foreach ($i in $all_results) {
-        $summary[0] += $i["req"].ToString().PadRight(6)
-        $summary[1] += $i["res"].ToString().PadRight(6)
-        $summary[2] += $i["lost"].ToString().PadRight(6)
-        $summary[3] += ($i["loss"].ToString() + "% ").PadRight(6)
-        $summary[4] += ($i["min"].ToString() + "ms ").PadRight(6)
-        $summary[5] += ($i["max"].ToString() + "ms ").PadRight(6)
-        $summary[6] += ($i["avg"].ToString() + "ms ").PadRight(6)
-
-        if ($all_results[-1] -ne $i) {
-            $summary[0] += " : "
-            $summary[1] += " : "
-            $summary[2] += " : "
-            $summary[3] += " : "
-            $summary[4] += " : "
-            $summary[5] += " : "
-            $summary[6] += " : "
-        }
-    }
-    Write-Host "Ping results for $( $device ):"
-    foreach ($i in $summary) {
-        Write-Host $i
-    }
-    Write-host ""
-    $datetime1 = [datetime]::ParseExact($all_results[0]["starttime"], "yyyy.MM.dd HH:mm:ss", $null)
-    $datetime2 = [datetime]::ParseExact($all_results[-1]["endtime"], "yyyy.MM.dd HH:mm:ss", $null)
-    
-    $datetimeDifference = $datetime2 - $datetime1
-    if ($datetimeDifference -is [System.TimeSpan]) {
-        $days = $datetimeDifference.Days
-        $hours = $datetimeDifference.Hours
-        $minutes = $datetimeDifference.Minutes
-        $seconds = $datetimeDifference.Seconds
-    
-        $resultDatetimeString = "{0:D2}.{1:D2}:{2:D2}:{3:D2}" -f $days, $hours, $minutes, $seconds
-    } else {
-        Write-Host "Die Variable `$datetimeDifference enthält keine gültige TimeSpan."
-    }
-    Write-Host "  Start Time : $($all_results[0]["starttime"])"
-    Write-Host "  End Time   : $($all_results[-1]["endtime"])"
-    Write-Host "  Time       : $($resultDatetimeString)"
-    Write-Host "  Device     : $($all_results[0]["device"])"
-    Write-Host "  Ping Time  : $($all_results[0]["pingtime"])"
-}
-
-
 # ------------------------------------------------------- #
 #                          Load                           #
 # ------------------------------------------------------- #
 
-function Show-Resultload($all_results, $device) {
+function Show-Resultload($all_results) {
     # $all_results | ConvertTo-Json | Out-File -FilePath "all_ping_results.json" -Encoding UTF8
     # $all_results[0]["loss"] | Out-String
     clear-host
@@ -501,7 +340,7 @@ while ($true) {
     $all_ping_results += $all_pings
     Clear-Host
     #    Write-Host $all_ping_results
-    Show-Result -all_results $all_ping_results -device $device_to_ping
+    Show-Resultload -all_results $all_ping_results
     $redo = Read-Host "Redo? (y/n)`n>> "
     if ($redo -eq "n") {
         $datetime = Get-Date -Format "yyyy.MM.dd_HH-mm-ss"

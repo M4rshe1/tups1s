@@ -437,7 +437,7 @@ if ($load_file -eq "l") {
         $jsonObject = $jsonContent | ConvertFrom-Json
         $jsonObject | ConvertTo-Json | Out-File -FilePath "test_output.json" -Encoding UTF8
         Show-Resultload -all_results $jsonObject
-        Write-Host "Press Enter to exit."
+        Read-Host "Press Enter to exit."
         exit
     }
     else {

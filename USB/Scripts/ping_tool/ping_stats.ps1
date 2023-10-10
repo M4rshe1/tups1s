@@ -105,7 +105,7 @@ function Show-Result($all_results, $device)
     #    ForEach-Object $longest["times"] { $response_graph += "" }
     Write-Host "`nResponse Graph ((" -NoNewline
     Write-Host "0 " -NoNewline -ForegroundColor Red
-    Write-Host " <10 <20 <30" -NoNewline -ForegroundColor Green
+    Write-Host " <10) <20 <30" -NoNewline -ForegroundColor Green
     Write-Host " <60" -NoNewline -ForegroundColor Yellow
     Write-Host " <120 <" -NoNewline -ForegroundColor Red
     Write-Host ")"

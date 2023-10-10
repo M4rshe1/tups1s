@@ -458,19 +458,16 @@ if ($ping_duration -eq "") {
 if ($ping_duration -match "^\d+s$") {
     $ping_duration = $ping_duration -replace "s", ""
     $ping_duration = [int]$ping_duration
-}
-elseif ($ping_duration -match "^\d+m$") {
+}elseif ($ping_duration -match "^\d+m$") {
     $ping_duration = $ping_duration -replace "m", ""
     $ping_duration = [int]$ping_duration * 60
-}
-elseif ([int]::TryParse($ping_duration, [ref]$null)) {
+}elseif ([int]::TryParse($ping_duration, [ref]$null)) {
     $ping_duration = [int]$ping_duration
-}
-else {
+}else {
     Write-Host "Invalid ping duration: $ping_duration"
     exit
 }
-
+pause
 Clear-Host
 while ($true) {
     $all_pings = ping-device $device_to_ping $ping_duration

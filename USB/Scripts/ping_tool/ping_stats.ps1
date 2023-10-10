@@ -379,7 +379,7 @@ function Show-Resultload($all_results, $device) {
             $summary[5] += " : "
         }
     }
-    Write-Host "Ping results for $( $device ):"
+    Write-Host "Ping results for $($all_results[0].device):"
     foreach ($i in $summary) {
         Write-Host $i
     }
@@ -467,6 +467,7 @@ if ($ping_duration -match "^\d+s$") {
     Write-Host "Invalid ping duration: $ping_duration"
     exit
 }
+
 Clear-Host
 while ($true) {
     $all_pings = ping-device $device_to_ping $ping_duration
@@ -483,7 +484,3 @@ while ($true) {
 
     Clear-Host
 }
-
-
-
-

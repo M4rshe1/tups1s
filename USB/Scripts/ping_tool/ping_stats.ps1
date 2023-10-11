@@ -4,6 +4,7 @@
 
 $DEFAULT_DEVICE = "google.com"
 $DEFAULT_PING_DURATION = "20"
+$BASE_API_URL = "http://192.168.1.50:6969"
 
 # ------------------------------------------------------- #
 #                        Functions                        #
@@ -27,6 +28,7 @@ function ping-device($dtp, $pd) {
         "times" = @()
         "device" = $dtp
         "starttime" = Get-Date -Format "yyyy.MM.dd HH:mm:ss"
+        "timestamps" = @()
         "endtime" = ""
         "pingtime" = $pd
         "avg" = 0
@@ -34,23 +36,18 @@ function ping-device($dtp, $pd) {
 
     Write-Host ""
     $i = 0
+    $startTimeStamp = Get-Date
     While ($EndTime -gt (Get-Date)) {
+
+        $nowTime = Get-Date
+        $datetimeDifference = $nowTime - $startTimeStamp
+        $ping_results["timestamps"] += $datetimeDifference.TotalSeconds
+
         [int]$ping_results["req"] += 1
         $ping_result = ping $dtp -n 1
-#        $ping_result | Out-File -FilePath "output.txt" -Encoding UTF8
-#
-#        $encoded_ping_result = [System.Text.Encoding]::UTF8.GetString([System.IO.File]::ReadAllBytes("output.txt"))
-#        $lines = $encoded_ping_result -split "`r`n"
         $lines = $ping_result -split "`r`n"
         $all_results_time = $lines[-1] -Split "Maximum = "
-#        Write-Host $lines[-1]
-#        Write-Host $all_results_time[-1].split("ms")[0].ToString()
         $ms_result = $all_results_time[-1].split("ms")[0].ToString().trim()
-#        Write-Host $ms_result
-#        $all_results_time = $all_results_time[-1].split("ms")[0]
-
-#        Pause
-        #        Write-Host $encoded_ping_result.split("Maximum = ")[1].split("ms")[0] -NoNewline
         if (-not [int]::TryParse($ms_result, [ref]$null)) {
             $ping_results["times"] += 4000
         }
@@ -58,11 +55,17 @@ function ping-device($dtp, $pd) {
             $ping_results["times"] += [int]$ms_result
         }
 
+
+
+
+
+
+
         $totalLength = [math]::round(($EndTime - $StartTime).TotalMilliseconds / 1000, 0)
         $completedLength = [math]::round(((Get-Date) - $StartTime).TotalMilliseconds / 1000 / $totalLength * 50, 0)
         $remainingLength = [math]::round(($EndTime - (Get-Date)).TotalMilliseconds / 1000 / $totalLength * 50, 0)
 
-        $rcompletedLength = [math]::round(((Get-Date) - $StartTime).TotalMilliseconds / 1000, 0)
+        $rcompletedLength = [math]::round(((Get-Date) - $StartTime).TotalSeconds)
 #        Write-Host $completedLength
         if ($completedLength -gt 50) {
             $completedLength = 50
@@ -100,7 +103,7 @@ function ping-device($dtp, $pd) {
     $ping_results["max"] = $ping_results["times"] | Where-Object { $_ -ne 4000 } |  Measure-Object -Maximum | Select-Object -ExpandProperty Maximum
     $ping_results["endtime"] = Get-Date -Format "yyyy.MM.dd HH:mm:ss"
     $ping_results["avg"] = $ping_results["times"] | Where-Object { $_ -ne 4000 } | Measure-Object -Average | Select-Object -ExpandProperty Average
-    $ping_results["avg"] = [math]::Round($ping_results["avg"], 2)
+    $ping_results["avg"] = [math]::Round($ping_results["avg"])
     return $ping_results
 }
 
@@ -161,7 +164,7 @@ function Show-Resultload($all_results) {
                 Write-Host ": $( $res.times[$i] )ms".PadRight(8) -NoNewline
             }
             elseif ($res.times[$i] -lt 40) {
-                Write-Host "###".PadRight(7)  -NoNewline -ForegroundColor Green
+                Write-Host "###".PadRight(7)  -NoNewline -ForegroundColor Yellow
                 Write-Host ": $( $res.times[$i] )ms".PadRight(8) -NoNewline
             }
             elseif ($res.times[$i] -lt 60) {
@@ -189,7 +192,7 @@ function Show-Resultload($all_results) {
             if ($i -eq 4000) {
                 Write-Host "0000" -NoNewline -ForegroundColor Red
             }
-            elseif ($i -lt 40) {
+            elseif ($i -lt 25) {
                 Write-Host "#" -NoNewline -ForegroundColor Green
             }
             elseif ($i -lt 60) {
@@ -301,9 +304,13 @@ if ($load_file -eq "l") {
         Write-Host "Selected File: $selectedFile"
         $jsonContent = Get-Content -Path $selectedFile -Raw
         $jsonObject = $jsonContent | ConvertFrom-Json
-        $jsonObject | ConvertTo-Json | Out-File -FilePath "test_output.json" -Encoding UTF8
+#        $jsonObject | ConvertTo-Json | Out-File -FilePath "test_output.json" -Encoding UTF8
         Show-Resultload -all_results $jsonObject
-        Read-Host "Press Enter to exit."
+        $gengraph = Read-Host "Enter g to generate graph.`n>> "
+        if ($gengraph -eq "g") {
+            Start-Process "$($BASE_API_URL)/ping-graph"
+        }
+
         exit
     }
     else {

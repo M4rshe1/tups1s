@@ -71,13 +71,13 @@ For a more detailed description of how to create a graphic, [click here](#g1).
 **<a id="datapoints"></a><span style="color:green">GREEN</span>**  
 In the green Part there are all ping sessions listed horizontally with every ping and there latency.
 Left of the latency is bar with a length between 1 and 6  
-- <span style="color:Red">0</span> Means the target has not responded  
-- <span style="color:green">#</span> Means the target responded under 10 ms  
-- <span style="color:green">##</span> Means the target responded under 25 ms  
-- <span style="color:yellow">###</span> Means the target responded under 40 ms  
-- <span style="color:yellow">####</span> Means the target responded under 60 ms  
-- <span style="color:red">#####</span> Means the target responded under 120 ms  
-- <span style="color:red">######</span> Means the target responded took mor then 120 ms
+- **<span style="color:Red">0</span>** Means the target has not responded  
+- **<span style="color:green">#</span>** Means the target responded under 10 ms  
+- **<span style="color:green">##</span>** Means the target responded under 25 ms  
+- **<span style="color:yellow">###</span>** Means the target responded under 40 ms  
+- **<span style="color:yellow">####</span>** Means the target responded under 60 ms  
+- **<span style="color:red">#####</span>** Means the target responded under 120 ms  
+- **<span style="color:red">######</span>** Means the target responded took mor then 120 ms
 
 **<span style="color:red">RED</span>**  
 I this section all ping sessions are listed vertically where 1000 ms is represented by 1 symbol.

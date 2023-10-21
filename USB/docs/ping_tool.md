@@ -77,12 +77,12 @@ Left of the latency is bar with a length between 1 and 6
 - **<span style="color:yellow">###</span>** Means the target responded **under 40 ms**  
 - **<span style="color:yellow">####</span>** Means the target responded **under 60 ms**  
 - **<span style="color:red">#####</span>** Means the target responded **under 120 ms**  
-- **<span style="color:red">######</span>** Means the target responded took **more then 120 ms**
+- **<span style="color:red">######</span>** Means the target responded took **more than 120 ms**
 
 **<span style="color:red">RED</span>**  
 I this section all ping sessions are listed vertically where 1000 ms is represented by 1 symbol.
 This means that if an answer has a duration of **2365 ms**, there are 2 symbols for it.
-If there is no answer, it is represented by <span style="color:red">0000</span>  .
+If there is no answer, it is represented by <span style="color:red">0000</span>.
 The colours are assigned the same as in the previous graphic.
 
 

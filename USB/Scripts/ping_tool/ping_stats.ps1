@@ -4,7 +4,7 @@
 
 $DEFAULT_DEVICE = "google.com"
 $DEFAULT_PING_DURATION = "20"
-$BASE_API_URL = "http://192.168.1.50:6969"
+$BASE_API_URL = "https://api.heggli.dev"
 
 # ------------------------------------------------------- #
 #                        Functions                        #
@@ -48,8 +48,11 @@ function ping-device($dtp, $pd) {
         $lines = $ping_result -split "`r`n"
         $all_results_time = $lines[-1] -Split "Maximum = "
         $ms_result = $all_results_time[-1].split("ms")[0].ToString().trim()
-        if (-not [int]::TryParse($ms_result, [ref]$null)) {
-            $ping_results["times"] += 4000
+        if ($ms_result -eq "<1") {
+            $ms_result = 1
+        }
+        elseif (-not [int]::TryParse($ms_result, [ref]$null)) {
+            $ping_results["times"] += 0
         }
         else {
             $ping_results["times"] += [int]$ms_result
@@ -100,9 +103,9 @@ function ping-device($dtp, $pd) {
 
     $ping_results["loss"] = [math]::Round($ping_results["lost"] / $ping_results["req"] * 100)
     $ping_results["min"] = $ping_results["times"] | Measure-Object -Minimum | Select-Object -ExpandProperty Minimum
-    $ping_results["max"] = $ping_results["times"] | Where-Object { $_ -ne 4000 } |  Measure-Object -Maximum | Select-Object -ExpandProperty Maximum
+    $ping_results["max"] = $ping_results["times"] | Where-Object { $_ -ne 0 } |  Measure-Object -Maximum | Select-Object -ExpandProperty Maximum
     $ping_results["endtime"] = Get-Date -Format "yyyy.MM.dd HH:mm:ss"
-    $ping_results["avg"] = $ping_results["times"] | Where-Object { $_ -ne 4000 } | Measure-Object -Average | Select-Object -ExpandProperty Average
+    $ping_results["avg"] = $ping_results["times"] | Where-Object { $_ -ne 0 } | Measure-Object -Average | Select-Object -ExpandProperty Average
     $ping_results["avg"] = [math]::Round($ping_results["avg"])
     return $ping_results
 }
@@ -145,7 +148,7 @@ function Show-Resultload($all_results) {
                 }
                 continue
             }
-            if ($res.times[$i] -eq 4000) {
+            if ($res.times[$i] -eq 0) {
                 Write-Host "0".PadRight(7) -NoNewline -ForegroundColor Red
                 Write-Host ": $( $res.times[$i] )ms".PadRight(8) -NoNewline
             }
@@ -189,7 +192,7 @@ function Show-Resultload($all_results) {
     Write-Host "`nResponse Graph in Real Time:`n(1000ms = 1 x #)"
     foreach ($res in $all_results) {
         foreach ($i in $res.times) {
-            if ($i -eq 4000) {
+            if ($i -eq 0) {
                 Write-Host "0000" -NoNewline -ForegroundColor Red
             }
             elseif ($i -lt 25) {
@@ -269,7 +272,7 @@ function Show-Resultload($all_results) {
     Write-Host "  End Time   : $($all_results[-1].endtime)"
     Write-Host "  Time       : $($resultDatetimeString)"
     Write-Host "  Device     : $($all_results[0].device)"
-    Write-Host "  Ping Time  : $($all_results[0].pingtime)"
+    Write-Host "  Ping Time  : $($all_results[0].pingtime) seconds"
 }
 
 # ------------------------------------------------------- #
@@ -278,7 +281,11 @@ function Show-Resultload($all_results) {
 $logedin_user = whoami
 $logedin_user = $logedin_user.split("\")[1]
 Set-Location -Path "C:\Users\$($logedin_user)\Downloads"
-$load_file = Read-Host "Enter l for load file.`n>> "
+Write-Host "What would you like to do?"
+Write-Host "  l - load ping results from file"
+Write-Host "  p - ping device"
+Write-Host "  g - generate graph"
+$load_file = Read-Host ">> "
 
 if ($load_file -eq "l") {
     # Load the Windows Forms assembly
@@ -315,16 +322,21 @@ if ($load_file -eq "l") {
     }
     else {
         Write-Host "No file selected."
+        Read-Host "Press Enter to exit..."
+        exit
     }
 }
-
+elseif ($load_file -eq "g") {
+    Start-Process "$($BASE_API_URL)/ping-graph"
+    exit
+}
 
 $all_ping_results = @()
 $device_to_ping = Read-Host "Enter device to ping (default: $DEFAULT_DEVICE)`n>> "
 if ($device_to_ping -eq "") {
     $device_to_ping = $DEFAULT_DEVICE
 }
-$ping_duration = Read-Host "Enter ping duration Xm or Xs (default: $DEFAULT_PING_DURATION)`n>> "
+$ping_duration = Read-Host "Enter ping duration X, Xs or Xm (default: $DEFAULT_PING_DURATION)`n>> "
 if ($ping_duration -eq "") {
     $ping_duration = $DEFAULT_PING_DURATION
 }

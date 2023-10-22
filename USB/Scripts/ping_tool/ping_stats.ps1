@@ -281,6 +281,23 @@ function Show-Resultload($all_results) {
 $logedin_user = whoami
 $logedin_user = $logedin_user.split("\")[1]
 Set-Location -Path "C:\Users\$($logedin_user)\Downloads"
+
+Write-Host @'
+  __  __ _  _            _         __
+ |  \/  | || |          | |       /_ |
+ | \  / | || |_ _ __ ___| |__   ___| |
+ | |\/| |__   _| '__/ __| '_ \ / _ \ |
+ | |  | |  | | | |  \__ \ | | |  __/ |
+ |_|  |_|  |_| |_|  |___/_| |_|\___|_|
+'@
+Write-Host ""
+Write-Host "****************************************************************"
+Write-Host "* Copyright of Colin Heggli 2023                               *"
+Write-Host "* https://colin.heggli.dev                                     *"
+Write-Host "* https://github.com/M4rshe1                                   *"
+Write-Host "****************************************************************"
+Write-Host ""
+Write-Host ""
 Write-Host "What would you like to do?"
 Write-Host "  l - load ping results from file"
 Write-Host "  p - ping device"

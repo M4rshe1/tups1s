@@ -36,48 +36,36 @@ function Show-Menu {
 #                   Update USB                       #
 # -------------------------------------------------- #
 
-#function Update-USB {
-#    Clear-Host
-#    Write-Host "Updating USB..."
-#    cmd.exe -/c ".\USB\update_USB.bat"
-#    Show-Menu
-#}
 #update with git
 function CheckGit {
     Clear-Host
     Write-Host "Checking Git..."
-    $Git = Get-Command git -ErrorAction SilentlyContinue
-    if ($null -eq $Git) {
-        installGit = Read-Host "Git not found. Install Git? (Y/N)"
+    if (!(Get-Command git -ErrorAction SilentlyContinue)) {
+        $installGit = Read-Host "Git not found. Install Git? (Y/N)"
         if ($installGit -eq "Y") {
-            if (!(Test-Path -Path 'C:\ProgramData\chocolatey\bin\choco.exe')) {
-                Write-Host "Installing Chocolatey..."
-                Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
+            if (!(Get-Command winget -ErrorAction SilentlyContinue)) {
+                Write-Host "Winget is not installed. You can install it from the Microsoft Store or by enabling it in Windows Features."
+                Write-Host "It also possible to install Git manually " start "https://git-scm.com/download/win" from https://git-scm.com/download/win
+                exit 1
             }
 
-            # Install Git using Chocolatey
             Write-Host "Installing Git..."
-            choco install git -y
-
-            # Check if Git is installed
-            if (!(Test-Path -Path 'C:\Program Files\Git\cmd\git.exe')) {
+            winget install Git -e
+            if (!(Get-Command git -ErrorAction SilentlyContinue)) {
                 Write-Host "Git installation failed."
                 exit 1
             }
 
             Write-Host "Git has been installed successfully."
             exit 0
-        }
-        else {
-            Clear-Host
+        } else {
             Write-Host "Git not found. Please install Git."
             pause
-            return 1
+            exit 1
         }
-    }
-    else {
+    } else {
         Write-Host "Git found"
-        pause
+        return 0
     }
 }
 
@@ -90,6 +78,7 @@ function Update-USB {
     }
     Write-Host "Updating USB..."
     git pull
+    Read-Host "USB updated. Press any key to continue..."
     Show-Menu
 }
 
@@ -507,7 +496,7 @@ function Show-SettingReset {
 
 
 # -------------------------------------------------- #
-#                   Network Menu                     #
+#                  generator Menu                    #
 # -------------------------------------------------- #
 function Show-GeneratorMenu {
     Clear-Host
@@ -515,6 +504,7 @@ function Show-GeneratorMenu {
     Write-Host
     Write-Host " * Net Mapper       (1)"
     Write-Host " * RDP M127 Gen     (2)"
+    Write-Host " * ps2exe           (3)"
     Write-Host
     Write-Host " - back             (0)"
     Write-Host
@@ -524,6 +514,7 @@ function Show-GeneratorMenu {
         "0" { Show-Menu }
         "1" { Show-GeneratorNetMapper }
         "2" { Show-GeneratorRDPm127 }
+        "3" { Show-Generatorps2exe }
         default { Show-GeneratorMenu }
     }
     
@@ -540,4 +531,48 @@ function Show-GeneratorRDPm127 {
     Clear-Host
     Show-GeneratorMenu
 }
+
+function Show-Generatorps2exe {
+    Clear-Host
+    .\USB\Scripts\Generator\ps2exe.ps1
+    Clear-Host
+    Show-GeneratorMenu
+}
+
+# -------------------------------------------------- #
+#                  Network Menu                      #
+# -------------------------------------------------- #
+
+function Show-NetworkMenu {
+    Clear-Host
+    Write-Host "Network"
+    Write-Host
+    Write-Host " * Ping Tool        (1)"
+    Write-Host
+    Write-Host " - back             (0)"
+    Write-Host
+    $select4 = Read-Host "Select"
+
+    switch ($select4) {
+        "0" { Show-Menu }
+        "1" { ping-tool }
+        default { Show-NetworkMenu }
+    }
+}
+
+function ping-tool {
+    Clear-Host
+    $currentPath = Get-Location
+    .\USB\Scripts\ping_tool\ping_stats.ps1
+    Set-Location $currentPath
+    Clear-Host
+    Show-NetworkMenu
+}
+
+
+
+
+
+
+
 Show-Menu

@@ -281,7 +281,7 @@ function Show-Resultload($all_results) {
 $logedin_user = whoami
 $logedin_user = $logedin_user.split("\")[1]
 Set-Location -Path "C:\Users\$($logedin_user)\Downloads"
-
+Clear-Host
 Write-Host @'
   __  __ _  _            _         __
  |  \/  | || |          | |       /_ |

@@ -4,7 +4,7 @@
 
 $DEFAULT_DEVICE = "google.com"
 $DEFAULT_PING_DURATION = "20"
-$BASE_API_URL = "https://api.heggli.dev/u/ping-graph"
+$BASE_API_URL = "https://api.heggli.dev/u/ping_graph"
 
 # ------------------------------------------------------- #
 #                        Functions                        #

@@ -4,7 +4,7 @@
 
 $DEFAULT_DEVICE = "google.com"
 $DEFAULT_PING_DURATION = "20"
-$BASE_API_URL = "https://api.heggli.dev"
+$BASE_API_URL = "https://api.heggli.dev/u/ping_graph"
 
 # ------------------------------------------------------- #
 #                        Functions                        #
@@ -94,7 +94,7 @@ function ping-device($dtp, $pd) {
             Write-Host "None ".PadLeft(8) -NoNewline -ForegroundColor Yellow
         }
 
-        Write-Host $ping_results["req"] -NoNewline -ForegroundColor Blue
+        Write-Host $ping_results["req"] -NoNewline -ForegroundColor Cyan
         Write-Host "          " -NoNewline
         Start-Sleep 1
         $i += 1
@@ -281,14 +281,16 @@ function Show-Resultload($all_results) {
 $logedin_user = whoami
 $logedin_user = $logedin_user.split("\")[1]
 Set-Location -Path "C:\Users\$($logedin_user)\Downloads"
-
+Clear-Host
 Write-Host @'
-  __  __ _  _            _         __
- |  \/  | || |          | |       /_ |
- | \  / | || |_ _ __ ___| |__   ___| |
- | |\/| |__   _| '__/ __| '_ \ / _ \ |
- | |  | |  | | | |  \__ \ | | |  __/ |
- |_|  |_|  |_| |_|  |___/_| |_|\___|_|
+  _____ _               _______          _ 
+ |  __ (_)             |__   __|        | |
+ | |__) | _ __   __ _     | | ___   ___ | |
+ |  ___/ | '_ \ / _' |    | |/ _ \ / _ \| |
+ | |   | | | | | (_| |    | | (_) | (_) | |
+ |_|   |_|_| |_|\__, |    |_|\___/ \___/|_|
+                 __/ |                     
+                |___/                      
 '@
 Write-Host ""
 Write-Host "****************************************************************"
@@ -332,7 +334,7 @@ if ($load_file -eq "l") {
         Show-Resultload -all_results $jsonObject
         $gengraph = Read-Host "Enter g to generate graph.`n>> "
         if ($gengraph -eq "g") {
-            Start-Process "$($BASE_API_URL)/ping-graph"
+            Start-Process "$($BASE_API_URL)"
         }
 
         exit
@@ -344,7 +346,7 @@ if ($load_file -eq "l") {
     }
 }
 elseif ($load_file -eq "g") {
-    Start-Process "$($BASE_API_URL)/ping-graph"
+    Start-Process "$($BASE_API_URL)"
     exit
 }
 
@@ -377,7 +379,7 @@ while ($true) {
     Clear-Host
     #    Write-Host $all_ping_results
     Show-Resultload -all_results $all_ping_results
-    $redo = Read-Host "Redo? (y/n)`n>> "
+    $redo = Read-Host "Defaul: [y] for redo, [n] for save and exit`n>> "
     if ($redo -eq "n") {
         $datetime = Get-Date -Format "yyyy.MM.dd_HH-mm-ss"
         $all_ping_results | ConvertTo-Json | Out-File -FilePath "ping_results_$( $datetime ).json" -Encoding UTF8

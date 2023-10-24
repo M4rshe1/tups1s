@@ -1,5 +1,5 @@
 # Ping Tool
-[Ping Tool Script](../Scripts/ping_tool/ping_stats.ps1)
+[Ping Tool Script](../Scripts/ping_tool/ping_tool.ps1)
 
 
 ## Description

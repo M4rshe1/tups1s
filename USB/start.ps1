@@ -563,7 +563,7 @@ function Show-NetworkMenu {
 function ping-tool {
     Clear-Host
     $currentPath = Get-Location
-    .\USB\Scripts\ping_tool\ping_stats.ps1
+    .\USB\Scripts\ping_tool\ping_tool.ps1
     Set-Location $currentPath
     Clear-Host
     Show-NetworkMenu

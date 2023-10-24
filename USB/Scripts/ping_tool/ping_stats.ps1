@@ -43,7 +43,6 @@ function ping-device($dtp, $pd) {
         $datetimeDifference = $nowTime - $startTimeStamp
         $ping_results["timestamps"] += $datetimeDifference.TotalSeconds
 
-        [int]$ping_results["req"] += 1
         $ping_result = ping $dtp -n 1
         $lines = $ping_result -split "`r`n"
         $all_results_time = $lines[-1] -Split "Maximum = "
@@ -98,6 +97,7 @@ function ping-device($dtp, $pd) {
         Write-Host "          " -NoNewline
         Start-Sleep 1
         $i += 1
+        [int]$ping_results["req"] += 1
     }
     Write-Host ""
 
@@ -228,6 +228,10 @@ function Show-Resultload($all_results) {
         "  Max        : "
         "  Avg        : "
     )
+    $overall_summary_lost = @()
+    $overall_summary_req = @()
+    $overall_summary_res = @()
+    $overall_summary_times = @()
 
     # $all_results | out-string
     foreach ($i in $all_results) {
@@ -239,6 +243,11 @@ function Show-Resultload($all_results) {
         $summary[5] += ($i.max.ToString() + "ms ").PadRight(6)
         $summary[6] += ($i.avg.ToString() + "ms ").PadRight(6)
 
+        $overall_summary_req += $i.req
+        $overall_summary_res += $i.res
+        $overall_summary_lost += $i.lost
+        $overall_summary_times += $i.times
+
         if ($all_results[-1] -ne $i) {
             $summary[0] += " : "
             $summary[1] += " : "
@@ -248,8 +257,42 @@ function Show-Resultload($all_results) {
             $summary[5] += " : "
             $summary[6] += " : "
         }
+        else
+        {
+            if ($overall_summary_req.count -eq 1) {
+                $sum_req = $overall_summary_req[0]
+            } else {
+                $sum_req = $overall_summary_req | Measure-Object -Sum | Select-Object -ExpandProperty Sum
+            }
+
+            if ($overall_summary_res.count -eq 1) {
+                $sum_res = $overall_summary_res[0]
+            } else {
+                $sum_res = $overall_summary_res | Measure-Object -Sum | Select-Object -ExpandProperty Sum
+            }
+
+            if ($overall_summary_lost.count -eq 1) {
+                $sum_lost = $overall_summary_lost[0]
+            } else {
+                $sum_lost = $overall_summary_lost | Measure-Object -Sum | Select-Object -ExpandProperty Sum
+            }
+
+
+            $loss = $sum_lost / $sum_req * 100
+            $summary[0] += "  | AVG : $($sum_req / $overall_summary_req.count)".PadRight(15) + "  | SUM : $($sum_req)"
+            $summary[1] += "  | AVG : $($sum_res / $overall_summary_res.count)".PadRight(15) + "  | SUM : $($sum_res)"
+            $summary[2] += "  | AVG : $($sum_lost / $overall_summary_lost.count)".PadRight(15) + "  | SUM : $($sum_lost)"
+            $summary[3] += "  | AVG : $($sum_lost / $overall_summary_req.count)%".PadRight(15) + "  | SUM : $([Math]::Round($loss).ToString())%"
+            $summary[4] += "  | MIN : $($overall_summary_times | Measure-Object -Minimum | Select-Object -ExpandProperty Minimum)ms"
+            $summary[5] += "  | MAX : $($overall_summary_times | Measure-Object -Maximum | Select-Object -ExpandProperty Maximum)ms"
+            $avg = $overall_summary_times | Measure-Object -Average | Select-Object -ExpandProperty Average
+            $avg = [math]::Round($avg)
+            $summary[6] += "  | AVG : $($avg)ms"
+        }
     }
+
     Write-Host "Ping results for $($all_results[0].device):"
+    Write-Host ""
     foreach ($i in $summary) {
         Write-Host $i
     }
@@ -273,6 +316,7 @@ function Show-Resultload($all_results) {
     Write-Host "  Time       : $($resultDatetimeString)"
     Write-Host "  Device     : $($all_results[0].device)"
     Write-Host "  Ping Time  : $($all_results[0].pingtime) seconds"
+    Write-Host ""
 }
 
 # ------------------------------------------------------- #

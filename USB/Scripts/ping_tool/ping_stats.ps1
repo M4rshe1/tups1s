@@ -94,7 +94,7 @@ function ping-device($dtp, $pd) {
             Write-Host "None ".PadLeft(8) -NoNewline -ForegroundColor Yellow
         }
 
-        Write-Host $ping_results["req"] -NoNewline -ForegroundColor Blue
+        Write-Host $ping_results["req"] -NoNewline -ForegroundColor Cyan
         Write-Host "          " -NoNewline
         Start-Sleep 1
         $i += 1

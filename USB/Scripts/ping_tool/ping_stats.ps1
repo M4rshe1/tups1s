@@ -189,7 +189,7 @@ function Show-Resultload($all_results) {
         Write-Host ""
     }
 
-    Write-Host "`nResponse Graph in Real Time:`n(1000ms = 1 x #)"
+    Write-Host "`nResponse Graph in Real Time:`n(+/- 1000ms = 1 x #)"
     foreach ($res in $all_results) {
         foreach ($i in $res.times) {
             if ($i -eq 0) {
@@ -204,10 +204,10 @@ function Show-Resultload($all_results) {
             elseif ($i -lt 1000) {
                 Write-Host "#" -NoNewline -ForegroundColor Red
             }
-            elseif ($i -lt 2000) {
+            elseif ($i -gt 1500) {
                 Write-Host "##" -NoNewline -ForegroundColor Red
             }
-            elseif ($i -lt 3000) {
+            elseif ($i -lt 2500) {
                 Write-Host "###" -NoNewline -ForegroundColor Red
             }
             else {

@@ -379,7 +379,7 @@ while ($true) {
     Clear-Host
     #    Write-Host $all_ping_results
     Show-Resultload -all_results $all_ping_results
-    $redo = Read-Host "Redo? (y/n)`n>> "
+    $redo = Read-Host "Defaul: [y] for redo, [n] for save and exit`n>> "
     if ($redo -eq "n") {
         $datetime = Get-Date -Format "yyyy.MM.dd_HH-mm-ss"
         $all_ping_results | ConvertTo-Json | Out-File -FilePath "ping_results_$( $datetime ).json" -Encoding UTF8

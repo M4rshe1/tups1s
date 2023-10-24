@@ -4,7 +4,7 @@
 
 $DEFAULT_DEVICE = "google.com"
 $DEFAULT_PING_DURATION = "20"
-$BASE_API_URL = "https://api.heggli.dev"
+$BASE_API_URL = "https://api.heggli.dev/u/ping-graph"
 
 # ------------------------------------------------------- #
 #                        Functions                        #
@@ -332,7 +332,7 @@ if ($load_file -eq "l") {
         Show-Resultload -all_results $jsonObject
         $gengraph = Read-Host "Enter g to generate graph.`n>> "
         if ($gengraph -eq "g") {
-            Start-Process "$($BASE_API_URL)/ping-graph"
+            Start-Process "$($BASE_API_URL)"
         }
 
         exit
@@ -344,7 +344,7 @@ if ($load_file -eq "l") {
     }
 }
 elseif ($load_file -eq "g") {
-    Start-Process "$($BASE_API_URL)/ping-graph"
+    Start-Process "$($BASE_API_URL)"
     exit
 }
 

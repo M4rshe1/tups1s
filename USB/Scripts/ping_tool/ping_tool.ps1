@@ -2,6 +2,9 @@
 #                   Settings / Variables                  #
 # ------------------------------------------------------- #
 
+# Load the Windows Forms assembly
+Add-Type -AssemblyName System.Windows.Forms
+
 $DEFAULT_DEVICE = "google.com"
 $DEFAULT_PING_DURATION = "20"
 $BASE_API_URL = "https://api.heggli.dev/u/ping_graph"
@@ -347,13 +350,11 @@ Write-Host ""
 Write-Host "What would you like to do?"
 Write-Host "  l - load ping results from file"
 Write-Host "  p - ping device"
+Write-Host "  c - continue to ping"
 Write-Host "  g - generate graph"
 $load_file = Read-Host ">> "
 
 if ($load_file -eq "l") {
-    # Load the Windows Forms assembly
-    Add-Type -AssemblyName System.Windows.Forms
-
     # Create a File Open dialog box
     $openFileDialog = New-Object System.Windows.Forms.OpenFileDialog
     $openFileDialog.Filter = "Json files (*.json)|*.json|All files (*.*)|*.*"
@@ -392,6 +393,51 @@ if ($load_file -eq "l") {
 elseif ($load_file -eq "g") {
     Start-Process "$($BASE_API_URL)"
     exit
+}elseif ($load_file -eq "c") {
+    # Create a File Open dialog box
+    $openFileDialog = New-Object System.Windows.Forms.OpenFileDialog
+    $openFileDialog.Filter = "Json files (*.json)|*.json|All files (*.*)|*.*"
+
+    # Set the default folder to the user's Downloads folder
+    $downloadsFolder = [System.Environment]::GetFolderPath('MyDocuments') + '\Downloads'
+    $openFileDialog.InitialDirectory = $downloadsFolder
+
+    # Show the dialog and check if the user selects a file
+    $result = $openFileDialog.ShowDialog()
+
+    # Check if the user clicked the OK button in the dialog
+    if ($result -eq [System.Windows.Forms.DialogResult]::OK) {
+        # Get the selected file path
+        $selectedFile = $openFileDialog.FileName
+        # Now you can do something with the selected file, e.g., open it
+        # For example, let's just display the selected file path
+        Write-Host "Selected File: $selectedFile"
+        $jsonContent = Get-Content -Path $selectedFile -Raw
+        $jsonObject = $jsonContent | ConvertFrom-Json
+#        $jsonObject | ConvertTo-Json | Out-File -FilePath "test_output.json" -Encoding UTF8
+        Clear-Host
+        $all_ping_results = $jsonObject
+        while ($true) {
+            $all_pings = ping-device $all_ping_results[0].device $all_ping_results[0].pingtime
+            $all_ping_results += $all_pings
+            Clear-Host
+            #    Write-Host $all_ping_results
+            Show-Resultload -all_results $all_ping_results
+            $redo = Read-Host "Defaul: [y] for redo, [n] for save and exit`n>> "
+            if ($redo -eq "n") {
+                $datetime = Get-Date -Format "yyyy.MM.dd_HH-mm-ss"
+                $all_ping_results | ConvertTo-Json | Out-File -FilePath "ping_results_$( $datetime ).json" -Encoding UTF8
+                break
+            }
+            Clear-Host
+        }
+        exit
+    }
+    else {
+        Write-Host "No file selected."
+        Read-Host "Press Enter to exit..."
+        exit
+    }
 }
 
 $all_ping_results = @()

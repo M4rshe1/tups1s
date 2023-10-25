@@ -353,7 +353,7 @@ Write-Host "  p - ping device"
 Write-Host "  c - continue to ping"
 Write-Host "  g - generate graph"
 $load_file = Read-Host ">> "
-
+$all_ping_results = @()
 if ($load_file -eq "l") {
     # Create a File Open dialog box
     $openFileDialog = New-Object System.Windows.Forms.OpenFileDialog
@@ -416,7 +416,7 @@ elseif ($load_file -eq "g") {
         $jsonObject = $jsonContent | ConvertFrom-Json
 #        $jsonObject | ConvertTo-Json | Out-File -FilePath "test_output.json" -Encoding UTF8
         Clear-Host
-        $all_ping_results = $jsonObject
+        $all_ping_results += $jsonObject
         Read-Host "Press enter to continue"
         while ($true) {
             $all_pings = ping-device $all_ping_results[0].device $all_ping_results[0].pingtime
@@ -463,7 +463,6 @@ if (($load_file -eq "p") -or ($load_file -eq "")) {
     }
     
     Clear-Host
-    $all_ping_results = @()
     while ($true) {
         $all_pings = ping-device $device_to_ping $ping_duration
         $all_ping_results += $all_pings

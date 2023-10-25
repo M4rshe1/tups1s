@@ -6,9 +6,14 @@
 The Program is written in Powershell, it is also available as a standalone executable or as a python script.
 
 The Ping tool ist a tool to capture the data from multiple ping sessions. The data is stored in a json file that is saved in the downloads' folder.  
-The Data can be displayed in the program itself or as a graph using the [Ping Tool API](https://api.heggli.dev/ping-graph) from the API HUB.
+The Data can be displayed in the program itself or as a graph using the [Ping Tool API](https://api.heggli.dev/ping_graph) from the API HUB.
 
 ## Usage
+It is available as a:
+- [Powershell script](../Scripts/ping_tool/ping_tool.ps1)
+- Python script
+- [Standalone executable](../Scripts/ping_tool/ping_tool.exe)
+- Web runable version (``irm https://api.heggli.dev/ping | iex``)
 
 ### Requirements
 - Powershell 5.1 or higher
@@ -27,16 +32,22 @@ Select what you want to do by entering the corresponding letter and pressing ent
 Default is `p` for ping.
 ```
 What would you like to do?
-  l - load ping results from file
   p - ping device
+  l - load ping results from file
+  c - continue to ping
   g - generate graph
+  m - merge ping results
+  s - split results
 >> :
 ```
 
 jump to  
-[l](#l1)  
-[p](#p1)  
-[g](#g1)
+[p - ping device](#p1)  
+[l - load ping results from file](#l1)  
+[c - continue to ping](#c1)  
+[g - generate graph](#g1)  
+[m - merge ping results](#m1)  
+[s - split results](#s1)  
 
 ### <a id="p1"></a>step p.1
 Enter the IP address or hostname of the device you want to ping.
@@ -51,7 +62,7 @@ Enter how long you want to ping the device in the following formats:
 ### step p.3
 Wait for the ping to finish.  
 ![ping](assets/ping_tool.jpg)
-The data will automatically be displayed after it finishes, jump to explanation for a more [detailed explanation](#l2)  
+The data will automatically be displayed after it finishes, here more [detailed explanation](#l2)  
 
 If you want to scann again press enter, otherwise enter `n` and press enter to save the data and close the script.
 
@@ -87,7 +98,10 @@ The colours are assigned the same as in the previous graphic.
 
 
 **<span style="color:blue">BLUE</span>**  
-The summarised data of the various ping sessions are displayed vertically here.
+The summarised data of the various ping sessions are displayed vertically here.  
+
+**<span style="color:Violet">VIOLET</span>**  
+The summarised data of th howl line is displayed here.
 
 **<span style="color:yellow">YELLOW</span>**  
 General information is displayed here.
@@ -135,6 +149,21 @@ if there was no respond there will be an `X` instead of a dot.
 The Table will display pretty much be the same as the [Blue and Yellow Part](#l2) of the loading function.
 
 ![ping_graph.jpg](assets/ping_graph.jpg)
+
+
+### <a id="c1"></a>step c.1
+After you pressed enter the program will open an explorer window for you to select a json file, from an earlier ping session.
+It will then continue to ping the device, with the same settings as the previous session, after you pressed enter.
+
+### <a id="m1"></a>step m.1
+After you pressed enter the program will open an explorer window for you to select a json files, from earlier ping sessions.
+It will then merge the data from the files into one file, after you pressed enter.
+The sequence of the files is important, the first file will be the first ping session and the last file will be the last ping session.
+
+### <a id="s1"></a>step s.1
+After you pressed enter the program will open an explorer window for you to select a json file, from an earlier ping session.
+It will then split the data from the file into its individual ping sessions, after you pressed enter.
+The data will be saved in the same in a folder with the same name as the file.
 
 
 

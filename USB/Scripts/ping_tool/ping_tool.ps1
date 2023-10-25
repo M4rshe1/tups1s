@@ -102,7 +102,7 @@ function ping-device($dtp, $pd) {
     Write-Host ""
 
     $ping_results["loss"] = [math]::Round($ping_results["lost"] / $ping_results["req"] * 100)
-    $ping_results["min"] = $ping_results["times"] | Measure-Object -Minimum | Select-Object -ExpandProperty Minimum
+    $ping_results["min"] = $ping_results["times"] | Where-Object { $_ -ne 0 } | Measure-Object -Minimum | Select-Object -ExpandProperty Minimum
     $ping_results["max"] = $ping_results["times"] | Where-Object { $_ -ne 0 } |  Measure-Object -Maximum | Select-Object -ExpandProperty Maximum
     $ping_results["endtime"] = Get-Date -Format "yyyy.MM.dd HH:mm:ss"
     $ping_results["avg"] = $ping_results["times"] | Where-Object { $_ -ne 0 } | Measure-Object -Average | Select-Object -ExpandProperty Average
@@ -282,10 +282,10 @@ function Show-Resultload($all_results) {
             $summary[0] += "  | AVG : $($sum_req / $overall_summary_req.count)".PadRight(15) + "  | SUM : $($sum_req)"
             $summary[1] += "  | AVG : $($sum_res / $overall_summary_res.count)".PadRight(15) + "  | SUM : $($sum_res)"
             $summary[2] += "  | AVG : $($sum_lost / $overall_summary_lost.count)".PadRight(15) + "  | SUM : $($sum_lost)"
-            $summary[3] += "  | AVG : $($sum_lost / $overall_summary_req.count)%".PadRight(15) + "  | SUM : $([Math]::Round($loss).ToString())%"
-            $summary[4] += "  | MIN : $($overall_summary_times | Measure-Object -Minimum | Select-Object -ExpandProperty Minimum)ms"
-            $summary[5] += "  | MAX : $($overall_summary_times | Measure-Object -Maximum | Select-Object -ExpandProperty Maximum)ms"
-            $avg = $overall_summary_times | Measure-Object -Average | Select-Object -ExpandProperty Average
+            $summary[3] += "  | AVG : $($sum_lost / $overall_summary_req.count)%".PadRight(15) + "  | SUM : $([Math]::Round($loss, 1).ToString())%"
+            $summary[4] += "  | MIN : $($overall_summary_times | Where-Object { $_ -ne 0 } | Measure-Object -Minimum | Select-Object -ExpandProperty Minimum)ms"
+            $summary[5] += "  | MAX : $($overall_summary_times | Where-Object { $_ -ne 0 } | Measure-Object -Maximum | Select-Object -ExpandProperty Maximum)ms"
+            $avg = $overall_summary_times | Where-Object { $_ -ne 0 } | Measure-Object -Average | Select-Object -ExpandProperty Average
             $avg = [math]::Round($avg)
             $summary[6] += "  | AVG : $($avg)ms"
         }

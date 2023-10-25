@@ -282,10 +282,10 @@ function Show-Resultload($all_results) {
 
 
             $loss = $sum_lost / $sum_req * 100
-            $summary[0] += "  | AVG : $([math]::Round($sum_req / $overall_summary_req.count),1)".PadRight(15) + "  | SUM : $($sum_req)"
-            $summary[1] += "  | AVG : $([math]::Round($sum_res / $overall_summary_res.count),1)".PadRight(15) + "  | SUM : $($sum_res)"
-            $summary[2] += "  | AVG : $([math]::Round($sum_lost / $overall_summary_lost.count),1)".PadRight(15) + "  | SUM : $($sum_lost)"
-            $summary[3] += "  | AVG : $([math]::Round($sum_lost / $overall_summary_req.count),1)%".PadRight(15) + "  | SUM : $([Math]::Round($loss, 1).ToString())%"
+            $summary[0] += "  | AVG : $([math]::Round($sum_req / $overall_summary_req.count,1))".PadRight(15) + "  | SUM : $($sum_req)"
+            $summary[1] += "  | AVG : $([math]::Round($sum_res / $overall_summary_res.count,1))".PadRight(15) + "  | SUM : $($sum_res)"
+            $summary[2] += "  | AVG : $([math]::Round($sum_lost / $overall_summary_lost.count,1))".PadRight(15) + "  | SUM : $($sum_lost)"
+            $summary[3] += "  | AVG : $([math]::Round($sum_lost / $overall_summary_req.count,1))%".PadRight(15) + "  | SUM : $([Math]::Round($loss, 1).ToString())%"
             $summary[4] += "  | MIN : $($overall_summary_times | Where-Object { $_ -ne 0 } | Measure-Object -Minimum | Select-Object -ExpandProperty Minimum)ms"
             $summary[5] += "  | MAX : $($overall_summary_times | Where-Object { $_ -ne 0 } | Measure-Object -Maximum | Select-Object -ExpandProperty Maximum)ms"
             $avg = $overall_summary_times | Where-Object { $_ -ne 0 } | Measure-Object -Average | Select-Object -ExpandProperty Average

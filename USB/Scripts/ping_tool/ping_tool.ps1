@@ -417,6 +417,7 @@ elseif ($load_file -eq "g") {
 #        $jsonObject | ConvertTo-Json | Out-File -FilePath "test_output.json" -Encoding UTF8
         Clear-Host
         $all_ping_results = $jsonObject
+        Read-Host "Press enter to continue"
         while ($true) {
             $all_pings = ping-device $all_ping_results[0].device $all_ping_results[0].pingtime
             $all_ping_results += $all_pings
@@ -439,42 +440,46 @@ elseif ($load_file -eq "g") {
         exit
     }
 }
-
-$all_ping_results = @()
-$device_to_ping = Read-Host "Enter device to ping (default: $DEFAULT_DEVICE)`n>> "
-if ($device_to_ping -eq "") {
-    $device_to_ping = $DEFAULT_DEVICE
-}
-$ping_duration = Read-Host "Enter ping duration X, Xs or Xm (default: $DEFAULT_PING_DURATION)`n>> "
-if ($ping_duration -eq "") {
-    $ping_duration = $DEFAULT_PING_DURATION
-}
-if ($ping_duration -match "^\d+s$") {
-    $ping_duration = $ping_duration -replace "s", ""
-    $ping_duration = [int]$ping_duration
-}elseif ($ping_duration -match "^\d+m$") {
-    $ping_duration = $ping_duration -replace "m", ""
-    $ping_duration = [int]$ping_duration * 60
-}elseif ([int]::TryParse($ping_duration, [ref]$null)) {
-    $ping_duration = [int]$ping_duration
-}else {
-    Write-Host "Invalid ping duration: $ping_duration"
-    exit
-}
-
-Clear-Host
-while ($true) {
-    $all_pings = ping-device $device_to_ping $ping_duration
-    $all_ping_results += $all_pings
-    Clear-Host
-    #    Write-Host $all_ping_results
-    Show-Resultload -all_results $all_ping_results
-    $redo = Read-Host "Defaul: [y] for redo, [n] for save and exit`n>> "
-    if ($redo -eq "n") {
-        $datetime = Get-Date -Format "yyyy.MM.dd_HH-mm-ss"
-        $all_ping_results | ConvertTo-Json | Out-File -FilePath "ping_results_$( $datetime ).json" -Encoding UTF8
-        break
+if (($load_file -eq "p") -or ($load_file -eq "")) {
+    $device_to_ping = Read-Host "Enter device to ping (default: $DEFAULT_DEVICE)`n>> "
+    if ($device_to_ping -eq "") {
+        $device_to_ping = $DEFAULT_DEVICE
     }
-
+    $ping_duration = Read-Host "Enter ping duration X, Xs or Xm (default: $DEFAULT_PING_DURATION)`n>> "
+    if ($ping_duration -eq "") {
+        $ping_duration = $DEFAULT_PING_DURATION
+    }
+    if ($ping_duration -match "^\d+s$") {
+        $ping_duration = $ping_duration -replace "s", ""
+        $ping_duration = [int]$ping_duration
+    }elseif ($ping_duration -match "^\d+m$") {
+        $ping_duration = $ping_duration -replace "m", ""
+        $ping_duration = [int]$ping_duration * 60
+    }elseif ([int]::TryParse($ping_duration, [ref]$null)) {
+        $ping_duration = [int]$ping_duration
+    }else {
+        Write-Host "Invalid ping duration: $ping_duration"
+        exit
+    }
+    
     Clear-Host
+    $all_ping_results = @()
+    while ($true) {
+        $all_pings = ping-device $device_to_ping $ping_duration
+        $all_ping_results += $all_pings
+        Clear-Host
+        #    Write-Host $all_ping_results
+        Show-Resultload -all_results $all_ping_results
+        $redo = Read-Host "Defaul: [y] for redo, [n] for save and exit`n>> "
+        if ($redo -eq "n") {
+            $datetime = Get-Date -Format "yyyy.MM.dd_HH-mm-ss"
+            $all_ping_results | ConvertTo-Json | Out-File -FilePath "ping_results_$( $datetime ).json" -Encoding UTF8
+            break
+        }
+    
+        Clear-Host
+    }
+} else {
+    Write-Host "Invalid input, exiting"
 }
+

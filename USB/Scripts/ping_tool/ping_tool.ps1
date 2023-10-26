@@ -168,39 +168,39 @@ function Show-Resultload($all_results)
             if ($res.times[$i] -eq 0)
             {
                 Write-Host "0".PadRight(7) -NoNewline -ForegroundColor Red
-                Write-Host ": $( $res.times[$i] )ms".PadRight(8) -NoNewline -ForegroundColor Red
+                Write-Host ": $( $res.times[$i] )ms".PadRight(8) -NoNewline
             }
             elseif ($res.times[$i] -lt 10)
             {
                 Write-Host "#".PadRight(7) -NoNewline -ForegroundColor Green
-                Write-Host ": $( $res.times[$i] )ms".PadRight(8) -NoNewline -ForegroundColor Green
+                Write-Host ": $( $res.times[$i] )ms".PadRight(8) -NoNewline
 
 
             }
             elseif ($res.times[$i] -lt 25)
             {
                 Write-Host "##".PadRight(7) -NoNewline -ForegroundColor Green
-                Write-Host ": $( $res.times[$i] )ms".PadRight(8) -NoNewline -ForegroundColor Green
+                Write-Host ": $( $res.times[$i] )ms".PadRight(8) -NoNewline
             }
             elseif ($res.times[$i] -lt 40)
             {
                 Write-Host "###".PadRight(7) -NoNewline -ForegroundColor Yellow
-                Write-Host ": $( $res.times[$i] )ms".PadRight(8) -NoNewline -ForegroundColor Yellow
+                Write-Host ": $( $res.times[$i] )ms".PadRight(8) -NoNewline
             }
             elseif ($res.times[$i] -lt 60)
             {
                 Write-Host "####".PadRight(7) -NoNewline -ForegroundColor Yellow
-                Write-Host ": $( $res.times[$i] )ms".PadRight(8) -NoNewline -ForegroundColor Yellow
+                Write-Host ": $( $res.times[$i] )ms".PadRight(8) -NoNewline
             }
             elseif ($res.times[$i] -lt 120)
             {
                 Write-Host "#####".PadRight(7) -NoNewline -ForegroundColor Red
-                Write-Host ": $( $res.times[$i] )ms".PadRight(8) -NoNewline -ForegroundColor Red
+                Write-Host ": $( $res.times[$i] )ms".PadRight(8) -NoNewline
             }
             else
             {
                 Write-Host "######".PadRight(7) -NoNewline -ForegroundColor Red
-                Write-Host ": $( $res.times[$i] )ms".PadRight(8) -NoNewline -ForegroundColor Red
+                Write-Host ": $( $res.times[$i] )ms".PadRight(8) -NoNewline
             }
             if ($all_results[-1] -ne $res)
             {
@@ -249,89 +249,156 @@ function Show-Resultload($all_results)
     Write-Host ""
 
 
-    $summary = @(
-        "  Requests   : "
-        "  Responses  : "
-        "  Lost       : "
-        "  Loss       : "
-        "  Min        : "
-        "  Max        : "
-        "  Avg        : "
-    )
-    $overall_summary_lost = @()
-    $overall_summary_req = @()
-    $overall_summary_res = @()
-    $overall_summary_times = @()
-
-    # $all_results | out-string
+    #    $summary = @(
+    #        "  Requests   : "
+    #        "  Responses  : "
+    #        "  Lost       : "
+    #        "  Loss       : "
+    #        "  Min        : "
+    #        "  Max        : "
+    #        "  Avg        : "
+    #    )
+    #    $overall_summary_lost = @()
+    #    $overall_summary_req = @()
+    #    $overall_summary_res = @()
+    #    $overall_summary_times = @()
+    #    $overall_summary_loss = @()
+    #
+    #    # $all_results | out-string
+    #    foreach ($i in $all_results)
+    #    {
+    #        $summary[0] += $i.req.ToString().PadRight(6)
+    #        $summary[1] += $i.res.ToString().PadRight(6)
+    #        $summary[2] += $i.lost.ToString().PadRight(6)
+    #        $summary[3] += ($i.loss.ToString() + "% ").PadRight(6)
+    #        $summary[4] += ($i.min.ToString() + "ms ").PadRight(6)
+    #        $summary[5] += ($i.max.ToString() + "ms ").PadRight(6)
+    #        $summary[6] += ($i.avg.ToString() + "ms ").PadRight(6)
+    #
+    #        $overall_summary_req += $i.req
+    #        $overall_summary_res += $i.res
+    #        $overall_summary_lost += $i.lost
+    #        $overall_summary_times += $i.times
+    #        $overall_summary_loss += $i.loss
+    #
+    #        if ($all_results[-1] -ne $i)
+    #        {
+    #            $summary[0] += " : "
+    #            $summary[1] += " : "
+    #            $summary[2] += " : "
+    #            $summary[3] += " : "
+    #            $summary[4] += " : "
+    #            $summary[5] += " : "
+    #            $summary[6] += " : "
+    #        }
+    #        else
+    #        {
+    #            if ($overall_summary_req.count -eq 1)
+    #            {
+    #                $sum_req = $overall_summary_req[0]
+    #            }
+    #            else
+    #            {
+    #                $sum_req = $overall_summary_req | Measure-Object -Sum | Select-Object -ExpandProperty Sum
+    #            }
+    #
+    #            if ($overall_summary_res.count -eq 1)
+    #            {
+    #                $sum_res = $overall_summary_res[0]
+    #            }
+    #            else
+    #            {
+    #                $sum_res = $overall_summary_res | Measure-Object -Sum | Select-Object -ExpandProperty Sum
+    #            }
+    #
+    #            if ($overall_summary_lost.count -eq 1)
+    #            {
+    #                $sum_lost = $overall_summary_lost[0]
+    #            }
+    #            else
+    #            {
+    #                $sum_lost = $overall_summary_lost | Measure-Object -Sum | Select-Object -ExpandProperty Sum
+    #            }
+    #            if ($overall_summary_loss.count -eq 0)
+    #            {
+    #                $overall_summary_loss = 0
+    #            }
+    #            else
+    #            {
+    #                $overall_summary_loss = $overall_summary_loss | Measure-Object -Average | Select-Object -ExpandProperty Average
+    #            }
+    #
+    #
+    #            $loss = $sum_lost / $sum_req * 100
+    #            $summary[0] += "  | AVG : $([math]::Round($sum_req / $overall_summary_req.count, 1) )".PadRight(15) + "  | SUM : $( $sum_req )"
+    #            $summary[1] += "  | AVG : $([math]::Round($sum_res / $overall_summary_res.count, 1) )".PadRight(15) + "  | SUM : $( $sum_res )"
+    #            $summary[2] += "  | AVG : $([math]::Round($sum_lost / $overall_summary_lost.count, 1) )".PadRight(15) + "  | SUM : $( $sum_lost )"
+    #            $summary[3] += "  | AVG : $([math]::Round($sum_lost / $overall_summary_loss.count, 1) )%".PadRight(15) + "  | SUM : $([math]::Round($loss, 1).ToString() )%"
+    #            $summary[4] += "  | MIN : $( $overall_summary_times | Where-Object { $_ -ne 0 } | Measure-Object -Minimum | Select-Object -ExpandProperty Minimum )ms"
+    #            $summary[5] += "  | MAX : $( $overall_summary_times | Where-Object { $_ -ne 0 } | Measure-Object -Maximum | Select-Object -ExpandProperty Maximum )ms"
+    #            $avg = $overall_summary_times | Where-Object { $_ -ne 0 } | Measure-Object -Average | Select-Object -ExpandProperty Average
+    #            $avg = [math]::Round($avg)
+    #            $summary[6] += "  | AVG : $( $avg )ms"
+    #        }
+    #    }
+    Write-Host "                Requests  : Respones  : Lost  : Loss  : Min     : Max     : Avg     : Start     : End        "
+    Write-Host "------------------------------------------------------------------------------------------------------------"
+    $count = 0
+    $table = @{
+        "req" = @()
+        "res" = @()
+        "lost" = @()
+        "loss" = @()
+        "min" = @()
+        "max" = @()
+        "avg" = @()
+        "times" = @()
+    }
+    $table_sum = @{
+        "req" = 0
+        "res" = 0
+        "lost" = 0
+        "loss" = 0
+        "min" = 0
+        "max" = 0
+        "avg" = 0
+    }
     foreach ($i in $all_results)
     {
-        $summary[0] += $i.req.ToString().PadRight(6)
-        $summary[1] += $i.res.ToString().PadRight(6)
-        $summary[2] += $i.lost.ToString().PadRight(6)
-        $summary[3] += ($i.loss.ToString() + "% ").PadRight(6)
-        $summary[4] += ($i.min.ToString() + "ms ").PadRight(6)
-        $summary[5] += ($i.max.ToString() + "ms ").PadRight(6)
-        $summary[6] += ($i.avg.ToString() + "ms ").PadRight(6)
-
-        $overall_summary_req += $i.req
-        $overall_summary_res += $i.res
-        $overall_summary_lost += $i.lost
-        $overall_summary_times += $i.times
-
-        if ($all_results[-1] -ne $i)
-        {
-            $summary[0] += " : "
-            $summary[1] += " : "
-            $summary[2] += " : "
-            $summary[3] += " : "
-            $summary[4] += " : "
-            $summary[5] += " : "
-            $summary[6] += " : "
-        }
-        else
-        {
-            if ($overall_summary_req.count -eq 1)
-            {
-                $sum_req = $overall_summary_req[0]
-            }
-            else
-            {
-                $sum_req = $overall_summary_req | Measure-Object -Sum | Select-Object -ExpandProperty Sum
-            }
-
-            if ($overall_summary_res.count -eq 1)
-            {
-                $sum_res = $overall_summary_res[0]
-            }
-            else
-            {
-                $sum_res = $overall_summary_res | Measure-Object -Sum | Select-Object -ExpandProperty Sum
-            }
-
-            if ($overall_summary_lost.count -eq 1)
-            {
-                $sum_lost = $overall_summary_lost[0]
-            }
-            else
-            {
-                $sum_lost = $overall_summary_lost | Measure-Object -Sum | Select-Object -ExpandProperty Sum
-            }
-
-
-            $loss = $sum_lost / $sum_req * 100
-            $summary[0] += "  | AVG : $([math]::Round($sum_req / $overall_summary_req.count, 1) )".PadRight(15) + "  | SUM : $( $sum_req )"
-            $summary[1] += "  | AVG : $([math]::Round($sum_res / $overall_summary_res.count, 1) )".PadRight(15) + "  | SUM : $( $sum_res )"
-            $summary[2] += "  | AVG : $([math]::Round($sum_lost / $overall_summary_lost.count, 1) )".PadRight(15) + "  | SUM : $( $sum_lost )"
-            $summary[3] += "  | AVG : $([math]::Round($sum_lost / $overall_summary_req.count, 1) )%".PadRight(15) + "  | SUM : $([Math]::Round($loss, 1).ToString() )%"
-            $summary[4] += "  | MIN : $( $overall_summary_times | Where-Object { $_ -ne 0 } | Measure-Object -Minimum | Select-Object -ExpandProperty Minimum )ms"
-            $summary[5] += "  | MAX : $( $overall_summary_times | Where-Object { $_ -ne 0 } | Measure-Object -Maximum | Select-Object -ExpandProperty Maximum )ms"
-            $avg = $overall_summary_times | Where-Object { $_ -ne 0 } | Measure-Object -Average | Select-Object -ExpandProperty Average
-            $avg = [math]::Round($avg)
-            $summary[6] += "  | AVG : $( $avg )ms"
-        }
+        Write-Host "  Session $($count.ToString().PadRight(3) ) : $($i.req.ToString().PadRight(6) )    : $($i.res.ToString().PadRight(6) )    : $($i.lost.ToString().PadRight(6) ): $(($i.loss.ToString() + "%").PadRight(6) ): $(($i.min.ToString() + "ms").PadRight(8) ): $(($i.max.ToString() + "ms").PadRight(8) ): $(($i.avg.ToString() + "ms").PadRight(8) ): $($i.starttime.split(" ")[-1].PadRight(10) ): $($i.endtime.split(" ")[-1].PadRight(10) ) "
+        $count += 1
+        $table["req"] += $i.req
+        $table["res"] += $i.res
+        $table["lost"] += $i.lost
+        $table["loss"] += $i.loss
+        $table["min"] += $i.min
+        $table["max"] += $i.max
+        $table["avg"] += $i.avg
+        $table["times"] += $i.times
     }
 
+    $table_sum["req"] = $table["req"] | Measure-Object -Sum | Select-Object -ExpandProperty Sum
+    $table_sum["res"] = $table["res"] | Measure-Object -Sum | Select-Object -ExpandProperty Sum
+    $table_sum["lost"] = $table["lost"] | Measure-Object -Sum | Select-Object -ExpandProperty Sum
+    $table_sum["loss"] = $table["loss"] | Measure-Object -Average | Select-Object -ExpandProperty Average
+    $table_sum["min"] = $table["min"] | Measure-Object -Minimum | Select-Object -ExpandProperty Minimum
+    $table_sum["max"] = $table["max"] | Measure-Object -Maximum | Select-Object -ExpandProperty Maximum
+    $table_sum["avg"] = $table["avg"] | Measure-Object -Average | Select-Object -ExpandProperty Average
+    $table_sum["avg"] = [math]::Round($table_sum["avg"])
+
+    $str = "  AVG        " +
+            " : $([math]::Round($table_sum['req'] / $table['req'].Count).ToString() )".PadRight(12) +
+            " : $([math]::Round($table_sum['res'] / $table['res'].Count).ToString() )".PadRight(12) +
+            " : $([math]::Round($table_sum['lost'] / $table['lost'].Count).ToString() )".PadRight(8) +
+            " : $([math]::Round($table_sum['loss'] / $table['req'].Count) )%".PadRight(8) +
+            " : $([math]::Round($table_sum['min'] / $table['min'].Count) )ms".PadRight(10) +
+            " : $([math]::Round($table_sum['max'] / $table['max'].Count) )ms".PadRight(10) +
+            " : $([math]::Round($table_sum['avg'] / $table['avg'].Count) )ms".PadRight(6)
+    Write-Host "------------------------------------------------------------------------------------------------------------"
+    Write-Host $str
+    Write-Host "  SUM/MIN/MAX : $($table_sum["req"].ToString().PadRight(7) )   : $($table_sum["res"].ToString().PadRight(6) )    : $($table_sum["lost"].ToString().PadRight(6) ): $(($table_sum["loss"].ToString() + "%").PadRight(6) ): $(($table_sum["min"].ToString() + "ms").PadRight(6) )  : $(($table_sum["max"].ToString() + "ms").PadRight(6) )  : $(($table_sum["avg"].ToString() + "ms").PadRight(6) )"
+    Write-Host "------------------------------------------------------------------------------------------------------------"
+    Write-Host ""
     Write-Host "Ping results for $( $all_results[0].device ):"
     Write-Host ""
     foreach ($i in $summary)
@@ -387,9 +454,9 @@ function Select-File()
         Write-Host "Selected File: $selectedFile"
         $jsonContent = Get-Content -Path $selectedFile -Raw
         $jsonObject = $jsonContent | ConvertFrom-Json
-#        Write-Host $selectedFile
-#        Write-Host $selectedFile.Split("\")[-1].Split(".")[0]
-        return $jsonObject, $selectedFile.Split("\")[-1].Replace(".json", "").Replace(".", "")
+        #        Write-Host $selectedFile
+        #        Write-Host $selectedFile.Split("\")[-1].Split(".")[0]
+        return $jsonObject,$selectedFile.Split("\")[-1].Replace(".json", "").Replace(".", "")
     }
     else
     {
@@ -463,27 +530,27 @@ function Show-Split($file, $oldFilename)
 
     $logedin_user = whoami
     $logedin_user = $logedin_user.split("\")[1]
-    $downloadFolder = "C:\Users\$( $logedin_user )\Downloads\$($oldFilename)"
+    $downloadFolder = "C:\Users\$( $logedin_user )\Downloads\$( $oldFilename )"
 
     Write-Host "Splitted files:"
     foreach ($i in $file)
     {
-    $f += $i
-    $name = "split_ping_results_$($i.starttime.replace(":"," ").replace(' ', '_')).json"
-    $filename = Join-Path $downloadFolder $name
-    # validat the path
-    if (-not (Test-Path $filename))
-    {
-        New-Item -Path $filename -ItemType File -Force | Out-Null
-    }
-    Write-Host $filename
-#    $f | Out-String
-    $f | ConvertTo-Json | Out-File -FilePath $filename -Encoding UTF8
-    $j += 1
-    $f = @()
-    $jsonContent = Get-Content -Path $filename | Out-String
-    $modifiedContent = "[" + $jsonContent + "]"
-    $modifiedContent | Set-Content -Path $filename
+        $f += $i
+        $name = "split_ping_results_$($i.starttime.replace(":", " ").replace(' ', '_') ).json"
+        $filename = Join-Path $downloadFolder $name
+        # validat the path
+        if (-not(Test-Path $filename))
+        {
+            New-Item -Path $filename -ItemType File -Force | Out-Null
+        }
+        Write-Host $filename
+        #    $f | Out-String
+        $f | ConvertTo-Json | Out-File -FilePath $filename -Encoding UTF8
+        $j += 1
+        $f = @()
+        $jsonContent = Get-Content -Path $filename | Out-String
+        $modifiedContent = "[" + $jsonContent + "]"
+        $modifiedContent | Set-Content -Path $filename
     }
 }
 
@@ -554,7 +621,14 @@ elseif ($load_file -eq "c")
             $datetime = Get-Date -Format "yyyy.MM.dd_HH-mm-ss"
             Write-Host "Saved as:"
             Write-Host "ping_results_$( $datetime ).json"
-            $all_ping_results | ConvertTo-Json | Out-File -FilePath "ping_results_$( $datetime ).json" -Encoding UTF8
+            $name = "ping_results_$( $datetime ).json"
+            $all_ping_results | ConvertTo-Json | Out-File -FilePath $name -Encoding UTF8
+            if ($all_ping_results.count -eq 1)
+            {
+                $jsonContent = Get-Content -Path $name | Out-String
+                $modifiedContent = "[" + $jsonContent + "]"
+                $modifiedContent | Set-Content -Path $name
+            }
             break
         }
         Clear-Host
@@ -605,7 +679,14 @@ elseif (($load_file -eq "p") -or ($load_file -eq ""))
         if ($redo -eq "n")
         {
             $datetime = Get-Date -Format "yyyy.MM.dd_HH-mm-ss"
-            $all_ping_results | ConvertTo-Json | Out-File -FilePath "ping_results_$( $datetime ).json" -Encoding UTF8
+            $name = "ping_results_$( $datetime ).json"
+            $all_ping_results | ConvertTo-Json | Out-File -FilePath $name -Encoding UTF8
+            if ($all_ping_results.count -eq 1)
+            {
+                $jsonContent = Get-Content -Path $name | Out-String
+                $modifiedContent = "[" + $jsonContent + "]"
+                $modifiedContent | Set-Content -Path $name
+            }
             break
         }
 

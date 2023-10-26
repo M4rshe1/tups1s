@@ -248,7 +248,8 @@ function Show-Resultload($all_results)
     }
     Write-Host ""
 
-
+    Write-Host "Ping results for $( $all_results[0].device ):"
+    Write-Host ""
     #    $summary = @(
     #        "  Requests   : "
     #        "  Responses  : "
@@ -399,8 +400,7 @@ function Show-Resultload($all_results)
     Write-Host "  SUM/MIN/MAX : $($table_sum["req"].ToString().PadRight(7) )   : $($table_sum["res"].ToString().PadRight(6) )    : $($table_sum["lost"].ToString().PadRight(6) ): $(($table_sum["loss"].ToString() + "%").PadRight(6) ): $(($table_sum["min"].ToString() + "ms").PadRight(6) )  : $(($table_sum["max"].ToString() + "ms").PadRight(6) )  : $(($table_sum["avg"].ToString() + "ms").PadRight(6) )"
     Write-Host "------------------------------------------------------------------------------------------------------------"
     Write-Host ""
-    Write-Host "Ping results for $( $all_results[0].device ):"
-    Write-Host ""
+
     foreach ($i in $summary)
     {
         Write-Host $i

@@ -167,8 +167,8 @@ function Show-Resultload($all_results)
             }
             if ($res.times[$i] -eq 0)
             {
-                Write-Host "0".PadRight(7) -NoNewline -ForegroundColor Red
-                Write-Host": $( $res.times[$i] )ms".PadRight(8) -NoNewline -ForegroundColor Red
+                Write-Host "0".PadRight(7) -NoNewline -ForegroundColor Red ": $( $res.times[$i] )ms".PadRight(8)
+                Write-Host ": $( $res.times[$i] )ms".PadRight(8) -NoNewline -ForegroundColor Red
             }
             elseif ($res.times[$i] -lt 10)
             {

@@ -481,6 +481,9 @@ function Show-Split($file, $oldFilename)
     $f | ConvertTo-Json | Out-File -FilePath $filename -Encoding UTF8
     $j += 1
     $f = @()
+    $jsonContent = Get-Content -Path $filename | Out-String
+    $modifiedContent = "[" + $jsonContent + "]"
+    $modifiedContent | Set-Content -Path $filename
     }
 }
 

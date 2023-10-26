@@ -6,7 +6,7 @@
 The Program is written in Powershell, it is also available as a standalone executable or as a python script.
 
 The Ping tool ist a tool to capture the data from multiple ping sessions. The data is stored in a json file that is saved in the downloads' folder.  
-The Data can be displayed in the program itself or as a graph using the [Ping Tool API](https://api.heggli.dev/ping_graph) from the API HUB.
+The Data can be displayed in the program itself or as a graph using the [Ping Tool API](https://api.heggli.dev/u/ping_graph) from the API HUB.
 
 ## Usage
 It is available as a:

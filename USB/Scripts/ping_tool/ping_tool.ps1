@@ -361,12 +361,23 @@ function Show-Resultload($all_results)
         "lost" = 0
         "loss" = 0
         "min" = 0
+        "minmin" = 0
         "max" = 0
+        "maxmax" = 0
         "avg" = 0
+        "avgavg" = 0
     }
     foreach ($i in $all_results)
     {
-        Write-Host "  Session $($count.ToString().PadRight(3) ) : $($i.req.ToString().PadRight(6) )    : $($i.res.ToString().PadRight(6) )    : $($i.lost.ToString().PadRight(6) ): $(($i.loss.ToString() + "%").PadRight(6) ): $(($i.min.ToString() + "ms").PadRight(8) ): $(($i.max.ToString() + "ms").PadRight(8) ): $(($i.avg.ToString() + "ms").PadRight(8) ): $($i.starttime.split(" ")[-1].PadRight(10) ): $($i.endtime.split(" ")[-1].PadRight(10) ) "
+        if ($count % 2 -eq 0)
+        {
+            Write-Host "  Session $($count.ToString().PadRight(3) ) : $($i.req.ToString().PadRight(6) )    : $($i.res.ToString().PadRight(6) )    : $($i.lost.ToString().PadRight(6) ): $(($i.loss.ToString() + "%").PadRight(6) ): $(($i.min.ToString() + "ms").PadRight(8) ): $(($i.max.ToString() + "ms").PadRight(8) ): $(($i.avg.ToString() + "ms").PadRight(8) ): $($i.starttime.split(" ")[-1].PadRight(10) ): $($i.endtime.split(" ")[-1].PadRight(10) ) "
+        }
+        else
+        {
+            Write-Host "  Session $($count.ToString().PadRight(3) ) : $($i.req.ToString().PadRight(6) )    : $($i.res.ToString().PadRight(6) )    : $($i.lost.ToString().PadRight(6) ): $(($i.loss.ToString() + "%").PadRight(6) ): $(($i.min.ToString() + "ms").PadRight(8) ): $(($i.max.ToString() + "ms").PadRight(8) ): $(($i.avg.ToString() + "ms").PadRight(8) ): $($i.starttime.split(" ")[-1].PadRight(10) ): $($i.endtime.split(" ")[-1].PadRight(10) ) " -ForegroundColor DarkGray
+        }
+
         $count += 1
         $table["req"] += $i.req
         $table["res"] += $i.res
@@ -382,11 +393,11 @@ function Show-Resultload($all_results)
     $table_sum["res"] = $table["res"] | Measure-Object -Sum | Select-Object -ExpandProperty Sum
     $table_sum["lost"] = $table["lost"] | Measure-Object -Sum | Select-Object -ExpandProperty Sum
     $table_sum["loss"] = $table["loss"] | Measure-Object -Average | Select-Object -ExpandProperty Average
-    $table_sum["min"] = $table["min"] | Measure-Object -Minimum | Select-Object -ExpandProperty Minimum
-    $table_sum["max"] = $table["max"] | Measure-Object -Maximum | Select-Object -ExpandProperty Maximum
-    $table_sum["avg"] = $table["avg"] | Measure-Object -Average | Select-Object -ExpandProperty Average
-    $table_sum["avg"] = [math]::Round($table_sum["avg"])
-
+    $table_sum["min"] = $table["min"] | Measure-Object -Sum | Select-Object -ExpandProperty Sum
+    $table_sum["minmin"] = $table["min"] | Measure-Object -Minimum | Select-Object -ExpandProperty Minimum
+    $table_sum["max"] = $table["max"] | Measure-Object -Sum | Select-Object -ExpandProperty Sum
+    $table_sum["maxmax"] = $table["max"] | Measure-Object -Maximum | Select-Object -ExpandProperty Maximum
+    $table_sum["avg"] = $table["avg"] | Measure-Object -Sum | Select-Object -ExpandProperty Sum
     $str = "  AVG        " +
             " : $([math]::Round($table_sum['req'] / $table['req'].Count).ToString() )".PadRight(12) +
             " : $([math]::Round($table_sum['res'] / $table['res'].Count).ToString() )".PadRight(12) +
@@ -397,7 +408,7 @@ function Show-Resultload($all_results)
             " : $([math]::Round($table_sum['avg'] / $table['avg'].Count) )ms".PadRight(6)
     Write-Host "------------------------------------------------------------------------------------------------------------"
     Write-Host $str
-    Write-Host "  SUM/MIN/MAX : $($table_sum["req"].ToString().PadRight(7) )   : $($table_sum["res"].ToString().PadRight(6) )    : $($table_sum["lost"].ToString().PadRight(6) ): $(($table_sum["loss"].ToString() + "%").PadRight(6) ): $(($table_sum["min"].ToString() + "ms").PadRight(6) )  : $(($table_sum["max"].ToString() + "ms").PadRight(6) )  : $(($table_sum["avg"].ToString() + "ms").PadRight(6) )"
+    Write-Host "  SUM/MIN/MAX : $($table_sum["req"].ToString().PadRight(7) )   : $($table_sum["res"].ToString().PadRight(6) )    : $($table_sum["lost"].ToString().PadRight(6) ): $(($table_sum["loss"].ToString() + "%").PadRight(6) ): $(($table_sum["minmin"].ToString() + "ms").PadRight(6) )  : $(($table_sum["maxmax"].ToString() + "ms").PadRight(6) )  : "
     Write-Host "------------------------------------------------------------------------------------------------------------"
     Write-Host ""
 
@@ -405,7 +416,6 @@ function Show-Resultload($all_results)
     {
         Write-Host $i
     }
-    Write-host ""
     $datetime1 = [datetime]::ParseExact($all_results[0].starttime, "yyyy.MM.dd HH:mm:ss", $null)
     $datetime2 = [datetime]::ParseExact($all_results[-1].endtime, "yyyy.MM.dd HH:mm:ss", $null)
 

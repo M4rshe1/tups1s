@@ -29,13 +29,13 @@ function ping-device($dtp, $pd)
         "loss" = 0
         "min" = 0
         "max" = 0
-        "times" = @()
+        "avg" = 0
         "device" = $dtp
         "starttime" = Get-Date -Format "yyyy.MM.dd HH:mm:ss"
-        "timestamps" = @()
         "endtime" = ""
         "pingtime" = $pd
-        "avg" = 0
+        "times" = @()
+        "timestamps" = @()
     }
 
     Write-Host ""
@@ -365,7 +365,6 @@ function Show-Resultload($all_results)
         "max" = 0
         "maxmax" = 0
         "avg" = 0
-        "avgavg" = 0
     }
     foreach ($i in $all_results)
     {

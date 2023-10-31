@@ -360,6 +360,7 @@ function Show-Resultload($all_results)
         "res" = 0
         "lost" = 0
         "loss" = 0
+        "lossloss" = 0
         "min" = 0
         "minmin" = 0
         "max" = 0
@@ -392,7 +393,8 @@ function Show-Resultload($all_results)
     $table_sum["res"] = $table["res"] | Measure-Object -Sum | Select-Object -ExpandProperty Sum
     $table_sum["lost"] = $table["lost"] | Measure-Object -Sum | Select-Object -ExpandProperty Sum
     $table_sum["loss"] = $table["loss"] | Measure-Object -Average | Select-Object -ExpandProperty Average
-    $table_sum["loss"] = [math]::Round($table_sum["loss"])
+    $table_sum["loss"] = $table_sum["loss"] | Measure-Object -Sum | Select-Object -ExpandProperty Sum
+    $table_sum["lossloss"] = [math]::Round($table_sum["lost"] / $table_sum["req"] * 100)
     $table_sum["min"] = $table["min"] | Measure-Object -Sum | Select-Object -ExpandProperty Sum
     $table_sum["minmin"] = $table["min"] | Measure-Object -Minimum | Select-Object -ExpandProperty Minimum
     $table_sum["max"] = $table["max"] | Measure-Object -Sum | Select-Object -ExpandProperty Sum
@@ -402,7 +404,7 @@ function Show-Resultload($all_results)
             " : $([math]::Round($table_sum['req'] / $table['req'].Count).ToString() )".PadRight(12) +
             " : $([math]::Round($table_sum['res'] / $table['res'].Count).ToString() )".PadRight(12) +
             " : $([math]::Round($table_sum['lost'] / $table['lost'].Count).ToString() )".PadRight(8) +
-            " : $([math]::Round($table_sum['loss'] / $table['req'].Count) )%".PadRight(8) +
+            " : $($table_sum['lossloss'] )%".PadRight(8) +
             " : $([math]::Round($table_sum['min'] / $table['min'].Count) )ms".PadRight(10) +
             " : $([math]::Round($table_sum['max'] / $table['max'].Count) )ms".PadRight(10) +
             " : $([math]::Round($table_sum['avg'] / $table['avg'].Count) )ms".PadRight(6)

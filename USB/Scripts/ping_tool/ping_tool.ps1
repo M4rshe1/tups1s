@@ -394,6 +394,7 @@ function Show-Resultload($all_results)
     $table_sum["lost"] = $table["lost"] | Measure-Object -Sum | Select-Object -ExpandProperty Sum
     $table_sum["loss"] = $table["loss"] | Measure-Object -Average | Select-Object -ExpandProperty Average
     $table_sum["loss"] = $table_sum["loss"] | Measure-Object -Sum | Select-Object -ExpandProperty Sum
+    $table_sum["loss"] = [math]::Round($table_sum["loss"])
     $table_sum["lossloss"] = [math]::Round($table_sum["lost"] / $table_sum["req"] * 100)
     $table_sum["min"] = $table["min"] | Measure-Object -Sum | Select-Object -ExpandProperty Sum
     $table_sum["minmin"] = $table["min"] | Measure-Object -Minimum | Select-Object -ExpandProperty Minimum

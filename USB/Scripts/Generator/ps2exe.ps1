@@ -1,10 +1,28 @@
-Import-Module ps2exe
+
+
+
+try {
+    # Attempt to import the module
+    $module = Get-Module -Name ps2exe -ListAvailable -ErrorAction Stop
+
+    if ($module -eq $null) {
+        # If the module is not available, install it
+        Install-Module -Name ps2exe -Force -Scope CurrentUser
+    }
+
+    # Import the module
+    Import-Module -Name ps2exe -Force
+}
+catch {
+    # Handle the exception
+    Write-Host "Error: $_"
+}
 
 Add-Type -AssemblyName System.Windows.Forms
 
 # Create a File Open dialog box
 $openFileDialog = New-Object System.Windows.Forms.OpenFileDialog
-$openFileDialog.Filter = "Json files (*.ps1)|*.ps1|All files (*.*)|*.*"
+$openFileDialog.Filter = "Powershell files (*.ps1)|*.ps1|All files (*.*)|*.*"
 
 # get the path of this file
 $downloadsFolder = Split-Path $MyInvocation.MyCommand.Path

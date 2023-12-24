@@ -14,7 +14,8 @@ function Show-Menu {
     Write-Host " + Games            (4)"
     Write-Host " + Script Generator (5)"
     Write-Host " + Network          (6)"
-    Write-Host " + Settings         (7)"
+    Write-Host " + Remote           (7)"
+    Write-Host " + Settings         (8)"
     Write-Host " - Exit             (0)"
     Write-Host
     $select = Read-Host "Select"
@@ -27,7 +28,8 @@ function Show-Menu {
         "4" { Show-GamesMenu }
         "5" { Show-GeneratorMenu }
         "6" { Show-NetworkMenu }
-        "7" { Show-SettingMenu }
+        "7" { Show-RemoteMenu }
+        "8" { Show-SettingMenu }
         default { Show-Menu }
     }
 }
@@ -569,6 +571,31 @@ function ping-tool {
     Show-NetworkMenu
 }
 
+
+function Show-RmoteMenu {
+    Clear-Host
+    Write-Host "Remote"
+    Write-Host
+    Write-Host " * add Public SSH Key to Server        (1)"
+    Write-Host
+    Write-Host " - back             (0)"
+    Write-Host
+    $select4 = Read-Host "Select"
+    
+switch ($select4) {
+        "0" { Show-Menu }
+        "1" { add-ssh-key }
+        default { Show-RmoteMenu }
+    }
+}
+
+
+function add-ssh-key {
+    clear-host
+    .\USB\Scripts\remote\add-ssh-key.bat
+    Clear-Host
+    Show-RmoteMenu
+}
 
 
 

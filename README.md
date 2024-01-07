@@ -1,7 +1,7 @@
 
 <p align=center>
   <br>
-  <a href="#" target="_blank"><img src="USB/Scripts/!assets/images/ascii.png"/></a>
+  <a href="#" target="_blank"><img src="https://github.com/M4rshe1/tups1s/USB/Scripts/!assets/images/ascii.png"/></a>
 </p>
 
 <p align="center">
@@ -18,7 +18,7 @@
 </p>
 
 <p align="center">
-<img width="70%" height="70%" src="USB/Scripts/!assets/images/start.png"/>
+<img width="70%" height="70%" src="https://github.com/M4rshe1/tups1s/USB/Scripts/!assets/images/start.png"/>
 
 </p>
 

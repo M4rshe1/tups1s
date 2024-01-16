@@ -576,9 +576,9 @@ function Show-RmoteMenu {
     Clear-Host
     Write-Host "Remote"
     Write-Host
-    Write-Host " * add Public SSH Key to Server        (1)"
+    Write-Host " * add Public SSH Key to Server     (1)"
     Write-Host
-    Write-Host " - back             (0)"
+    Write-Host " - back                             (0)"
     Write-Host
     $select4 = Read-Host "Select"
     

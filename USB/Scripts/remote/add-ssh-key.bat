@@ -19,7 +19,7 @@ set /p port=">>"
 
 @REM check if the ssh key exists
 if not exist %USERPROFILE%\.ssh\id_rsa.pub (
-    echo ssh key does not exist$
+    echo ssh key does not exist
     echo creating ssh key
     ssh-keygen -t rsa -b 4096 -C "colin@%computername%" -f %USERPROFILE%\.ssh\id_rsa
     echo ssh key created in %USERPROFILE%\.ssh\id_rsa.pub

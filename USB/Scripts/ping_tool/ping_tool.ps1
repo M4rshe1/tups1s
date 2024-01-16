@@ -557,7 +557,7 @@ function Show-Merge($files)
     $datetime = Get-Date -Format "yyyy.MM.dd_HH-mm-ss"
     #    $all_ping_results | ConvertTo-Json | Out-File -FilePath "merged_ping_results_$( $datetime ).json" -Encoding UTF8
     Write-Host "Merged as:"
-    Write-Host "merged_ping_results_$( $datetime ).json in $( $logedin_user )\Downloads"
+    Write-Host "merged_ping_results_$( $datetime ).json in \Users\$( $logedin_user )\Downloads"
 }
 
 # ------------------------------------------------------- #
@@ -723,7 +723,7 @@ elseif (($load_file -eq "p") -or ($load_file -eq ""))
             $datetime = Get-Date -Format "yyyy.MM.dd_HH-mm-ss"
             $name = "ping_results_$( $datetime ).json"
             Write-Host "Saved as:"
-            Write-Host $name + " in $( $logedin_user )\Downloads"
+            Write-Host "$($name) in \Users\$( $logedin_user )\Downloads"
             $all_ping_results | ConvertTo-Json | Out-File -FilePath $name -Encoding UTF8
             if ($all_ping_results.count -eq 1)
             {

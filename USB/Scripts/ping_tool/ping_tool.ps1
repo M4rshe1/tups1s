@@ -30,6 +30,7 @@ function ping-device($dtp, $pd)
         "min" = 0
         "max" = 0
         "avg" = 0
+        "median" = 0
         "device" = $dtp
         "starttime" = Get-Date -Format "yyyy.MM.dd HH:mm:ss"
         "endtime" = ""
@@ -118,8 +119,31 @@ function ping-device($dtp, $pd)
     $ping_results["endtime"] = Get-Date -Format "yyyy.MM.dd HH:mm:ss"
     $ping_results["avg"] = $ping_results["times"] | Where-Object { $_ -ne 0 } | Measure-Object -Average | Select-Object -ExpandProperty Average
     $ping_results["avg"] = [math]::Round($ping_results["avg"])
+    $ping_results["median"] = Get-Median $ping_results["times"]
+    #    $ping_results | ConvertTo-Json | Out-File -FilePath "ping_results.json" -Encoding UTF8
     return $ping_results
 }
+
+# ------------------------------------------------------- #
+#                       Median                            #
+# ------------------------------------------------------- #
+
+function Get-Median($data)
+{
+    $data = $data | Sort-Object -Descending
+    if ($data.count%2)
+    {
+        #odd
+        $medianvalue = $data[[math]::Floor($data.count/2)]
+    }
+    else
+    {
+        #even
+        $medianValue = ($data[$data.Count/2], $data[$data.count/2 - 1] |Measure-Object -Average).average
+    }
+    return $medianValue
+}
+
 
 # ------------------------------------------------------- #
 #                          Load                           #
@@ -138,7 +162,7 @@ function Show-Resultload($all_results)
             $longest = $i
         }
     }
-
+    Write-Host "Ping results for $( $all_results[0].device ):"
 
     #    $response_graph = @()
     #    ForEach-Object $longest["times"] { $response_graph += "" }
@@ -210,140 +234,46 @@ function Show-Resultload($all_results)
         Write-Host ""
     }
 
-    Write-Host "`nResponse Graph in Real Time:`n(+/- 1000ms = 1 x #)"
-    foreach ($res in $all_results)
-    {
-        foreach ($i in $res.times)
-        {
-            if ($i -eq 0)
-            {
-                Write-Host "0000" -NoNewline -ForegroundColor Red
-            }
-            elseif ($i -lt 25)
-            {
-                Write-Host "#" -NoNewline -ForegroundColor Green
-            }
-            elseif ($i -lt 60)
-            {
-                Write-Host "#" -NoNewline -ForegroundColor Yellow
-            }
-            elseif ($i -lt 1000)
-            {
-                Write-Host "#" -NoNewline -ForegroundColor Red
-            }
-            elseif ($i -gt 1500)
-            {
-                Write-Host "##" -NoNewline -ForegroundColor Red
-            }
-            elseif ($i -lt 2500)
-            {
-                Write-Host "###" -NoNewline -ForegroundColor Red
-            }
-            else
-            {
-                Write-Host "####" -NoNewline -ForegroundColor Yellow
-            }
-        }
-        Write-Host ""
-    }
-    Write-Host ""
-
-    Write-Host "Ping results for $( $all_results[0].device ):"
-    Write-Host ""
-    #    $summary = @(
-    #        "  Requests   : "
-    #        "  Responses  : "
-    #        "  Lost       : "
-    #        "  Loss       : "
-    #        "  Min        : "
-    #        "  Max        : "
-    #        "  Avg        : "
-    #    )
-    #    $overall_summary_lost = @()
-    #    $overall_summary_req = @()
-    #    $overall_summary_res = @()
-    #    $overall_summary_times = @()
-    #    $overall_summary_loss = @()
-    #
-    #    # $all_results | out-string
-    #    foreach ($i in $all_results)
+    #    Write-Host "`nResponse Graph in Real Time:`n(+/- 1000ms = 1 x #)"
+    #    foreach ($res in $all_results)
     #    {
-    #        $summary[0] += $i.req.ToString().PadRight(6)
-    #        $summary[1] += $i.res.ToString().PadRight(6)
-    #        $summary[2] += $i.lost.ToString().PadRight(6)
-    #        $summary[3] += ($i.loss.ToString() + "% ").PadRight(6)
-    #        $summary[4] += ($i.min.ToString() + "ms ").PadRight(6)
-    #        $summary[5] += ($i.max.ToString() + "ms ").PadRight(6)
-    #        $summary[6] += ($i.avg.ToString() + "ms ").PadRight(6)
-    #
-    #        $overall_summary_req += $i.req
-    #        $overall_summary_res += $i.res
-    #        $overall_summary_lost += $i.lost
-    #        $overall_summary_times += $i.times
-    #        $overall_summary_loss += $i.loss
-    #
-    #        if ($all_results[-1] -ne $i)
+    #        foreach ($i in $res.times)
     #        {
-    #            $summary[0] += " : "
-    #            $summary[1] += " : "
-    #            $summary[2] += " : "
-    #            $summary[3] += " : "
-    #            $summary[4] += " : "
-    #            $summary[5] += " : "
-    #            $summary[6] += " : "
+    #            if ($i -eq 0)
+    #            {
+    #                Write-Host "0000" -NoNewline -ForegroundColor Red
+    #            }
+    #            elseif ($i -lt 25)
+    #            {
+    #                Write-Host "#" -NoNewline -ForegroundColor Green
+    #            }
+    #            elseif ($i -lt 60)
+    #            {
+    #                Write-Host "#" -NoNewline -ForegroundColor Yellow
+    #            }
+    #            elseif ($i -lt 1000)
+    #            {
+    #                Write-Host "#" -NoNewline -ForegroundColor Red
+    #            }
+    #            elseif ($i -gt 1500)
+    #            {
+    #                Write-Host "##" -NoNewline -ForegroundColor Red
+    #            }
+    #            elseif ($i -lt 2500)
+    #            {
+    #                Write-Host "###" -NoNewline -ForegroundColor Red
+    #            }
+    #            else
+    #            {
+    #                Write-Host "####" -NoNewline -ForegroundColor Yellow
+    #            }
     #        }
-    #        else
-    #        {
-    #            if ($overall_summary_req.count -eq 1)
-    #            {
-    #                $sum_req = $overall_summary_req[0]
-    #            }
-    #            else
-    #            {
-    #                $sum_req = $overall_summary_req | Measure-Object -Sum | Select-Object -ExpandProperty Sum
-    #            }
-    #
-    #            if ($overall_summary_res.count -eq 1)
-    #            {
-    #                $sum_res = $overall_summary_res[0]
-    #            }
-    #            else
-    #            {
-    #                $sum_res = $overall_summary_res | Measure-Object -Sum | Select-Object -ExpandProperty Sum
-    #            }
-    #
-    #            if ($overall_summary_lost.count -eq 1)
-    #            {
-    #                $sum_lost = $overall_summary_lost[0]
-    #            }
-    #            else
-    #            {
-    #                $sum_lost = $overall_summary_lost | Measure-Object -Sum | Select-Object -ExpandProperty Sum
-    #            }
-    #            if ($overall_summary_loss.count -eq 0)
-    #            {
-    #                $overall_summary_loss = 0
-    #            }
-    #            else
-    #            {
-    #                $overall_summary_loss = $overall_summary_loss | Measure-Object -Average | Select-Object -ExpandProperty Average
-    #            }
-    #
-    #
-    #            $loss = $sum_lost / $sum_req * 100
-    #            $summary[0] += "  | AVG : $([math]::Round($sum_req / $overall_summary_req.count, 1) )".PadRight(15) + "  | SUM : $( $sum_req )"
-    #            $summary[1] += "  | AVG : $([math]::Round($sum_res / $overall_summary_res.count, 1) )".PadRight(15) + "  | SUM : $( $sum_res )"
-    #            $summary[2] += "  | AVG : $([math]::Round($sum_lost / $overall_summary_lost.count, 1) )".PadRight(15) + "  | SUM : $( $sum_lost )"
-    #            $summary[3] += "  | AVG : $([math]::Round($sum_lost / $overall_summary_loss.count, 1) )%".PadRight(15) + "  | SUM : $([math]::Round($loss, 1).ToString() )%"
-    #            $summary[4] += "  | MIN : $( $overall_summary_times | Where-Object { $_ -ne 0 } | Measure-Object -Minimum | Select-Object -ExpandProperty Minimum )ms"
-    #            $summary[5] += "  | MAX : $( $overall_summary_times | Where-Object { $_ -ne 0 } | Measure-Object -Maximum | Select-Object -ExpandProperty Maximum )ms"
-    #            $avg = $overall_summary_times | Where-Object { $_ -ne 0 } | Measure-Object -Average | Select-Object -ExpandProperty Average
-    #            $avg = [math]::Round($avg)
-    #            $summary[6] += "  | AVG : $( $avg )ms"
-    #        }
+    #        Write-Host ""
     #    }
-    Write-Host "                Requests  : Respones  : Lost  : Loss  : Min     : Max     : Avg     : Start     : End        "
-    Write-Host "------------------------------------------------------------------------------------------------------------"
+    Write-Host ""
+    Write-Host ""
+    Write-Host "  Session     : Requests  : Respones  : Lost  : Loss  : Min     : Max     : Avg     : Median  : Start     : End       "
+    Write-Host "----------------------------------------------------------------------------------------------------------------------"
     $count = 0
     $table = @{
         "req" = @()
@@ -353,29 +283,46 @@ function Show-Resultload($all_results)
         "min" = @()
         "max" = @()
         "avg" = @()
+        "median" = @()
         "times" = @()
     }
     $table_sum = @{
         "req" = 0
+        "minreq" = 0
+        "maxreq" = 0
         "res" = 0
+        "minres" = 0
+        "maxres" = 0
         "lost" = 0
+        "minlost" = 0
+        "maxlost" = 0
         "loss" = 0
-        "lossloss" = 0
+        "minloss" = 0
+        "maxloss" = 0
+        "sumloss" = 0
         "min" = 0
+        "summin" = 0
         "minmin" = 0
+        "maxmin" = 0
         "max" = 0
+        "summax" = 0
         "maxmax" = 0
+        "minmax" = 0
         "avg" = 0
+        "sumavg" = 0
+        "minavg" = 0
+        "maxavg" = 0
+        "median" = 0
     }
     foreach ($i in $all_results)
     {
         if ($count % 2 -eq 0)
         {
-            Write-Host "  Session $($count.ToString().PadRight(3) ) : $($i.req.ToString().PadRight(6) )    : $($i.res.ToString().PadRight(6) )    : $($i.lost.ToString().PadRight(6) ): $(($i.loss.ToString() + "%").PadRight(6) ): $(($i.min.ToString() + "ms").PadRight(8) ): $(($i.max.ToString() + "ms").PadRight(8) ): $(($i.avg.ToString() + "ms").PadRight(8) ): $($i.starttime.split(" ")[-1].PadRight(10) ): $($i.endtime.split(" ")[-1].PadRight(10) ) "
+            Write-Host "  Session $($count.ToString().PadRight(3) ) : $($i.req.ToString().PadRight(6) )    : $($i.res.ToString().PadRight(6) )    : $($i.lost.ToString().PadRight(6) ): $(($i.loss.ToString() + "%").PadRight(6) ): $(($i.min.ToString() + "ms").PadRight(8) ): $(($i.max.ToString() + "ms").PadRight(8) ): $(($i.avg.ToString() + "ms").PadRight(8) ): $(($i.median.ToString() + "ms").PadRight(8) ): $($i.starttime.split(" ")[-1].PadRight(10) ): $($i.endtime.split(" ")[-1].PadRight(10) ) "
         }
         else
         {
-            Write-Host "  Session $($count.ToString().PadRight(3) ) : $($i.req.ToString().PadRight(6) )    : $($i.res.ToString().PadRight(6) )    : $($i.lost.ToString().PadRight(6) ): $(($i.loss.ToString() + "%").PadRight(6) ): $(($i.min.ToString() + "ms").PadRight(8) ): $(($i.max.ToString() + "ms").PadRight(8) ): $(($i.avg.ToString() + "ms").PadRight(8) ): $($i.starttime.split(" ")[-1].PadRight(10) ): $($i.endtime.split(" ")[-1].PadRight(10) ) " -ForegroundColor DarkGray
+            Write-Host "  Session $($count.ToString().PadRight(3) ) : $($i.req.ToString().PadRight(6) )    : $($i.res.ToString().PadRight(6) )    : $($i.lost.ToString().PadRight(6) ): $(($i.loss.ToString() + "%").PadRight(6) ): $(($i.min.ToString() + "ms").PadRight(8) ): $(($i.max.ToString() + "ms").PadRight(8) ): $(($i.avg.ToString() + "ms").PadRight(8) ): $(($i.median.ToString() + "ms").PadRight(8) ): $($i.starttime.split(" ")[-1].PadRight(10) ): $($i.endtime.split(" ")[-1].PadRight(10) ) " -ForegroundColor DarkGray
         }
 
         $count += 1
@@ -386,39 +333,102 @@ function Show-Resultload($all_results)
         $table["min"] += $i.min
         $table["max"] += $i.max
         $table["avg"] += $i.avg
+        $table["median"] += $i.median
         $table["times"] += $i.times
     }
 
     $table_sum["req"] = $table["req"] | Measure-Object -Sum | Select-Object -ExpandProperty Sum
+    $table_sum["minreq"] = $table["req"] | Measure-Object -Minimum | Select-Object -ExpandProperty Minimum
+    $table_sum["maxreq"] = $table["req"] | Measure-Object -Maximum | Select-Object -ExpandProperty Maximum
     $table_sum["res"] = $table["res"] | Measure-Object -Sum | Select-Object -ExpandProperty Sum
+    $table_sum["minres"] = $table["res"] | Measure-Object -Minimum | Select-Object -ExpandProperty Minimum
+    $table_sum["maxres"] = $table["res"] | Measure-Object -Maximum | Select-Object -ExpandProperty Maximum
     $table_sum["lost"] = $table["lost"] | Measure-Object -Sum | Select-Object -ExpandProperty Sum
+    $table_sum["minlost"] = $table["lost"] | Measure-Object -Minimum | Select-Object -ExpandProperty Minimum
+    $table_sum["maxlost"] = $table["lost"] | Measure-Object -Maximum | Select-Object -ExpandProperty Maximum
     $table_sum["loss"] = $table["loss"] | Measure-Object -Average | Select-Object -ExpandProperty Average
     $table_sum["loss"] = $table_sum["loss"] | Measure-Object -Sum | Select-Object -ExpandProperty Sum
     $table_sum["loss"] = [math]::Round($table_sum["loss"])
-    $table_sum["lossloss"] = [math]::Round($table_sum["lost"] / $table_sum["req"] * 100)
+    $table_sum["minloss"] = $table["loss"] | Measure-Object -Minimum | Select-Object -ExpandProperty Minimum
+    $table_sum["maxloss"] = $table["loss"] | Measure-Object -Maximum | Select-Object -ExpandProperty Maximum
+    $table_sum["sumloss"] = [math]::Round($table_sum["lost"] / $table_sum["req"] * 100)
     $table_sum["min"] = $table["min"] | Measure-Object -Sum | Select-Object -ExpandProperty Sum
+    $table_sum["summin"] = $table["min"] | Measure-Object -Sum | Select-Object -ExpandProperty Sum
     $table_sum["minmin"] = $table["min"] | Measure-Object -Minimum | Select-Object -ExpandProperty Minimum
+    $table_sum["maxmin"] = $table["min"] | Measure-Object -Maximum | Select-Object -ExpandProperty Maximum
     $table_sum["max"] = $table["max"] | Measure-Object -Sum | Select-Object -ExpandProperty Sum
+    $table_sum["summax"] = $table["max"] | Measure-Object -Sum | Select-Object -ExpandProperty Sum
     $table_sum["maxmax"] = $table["max"] | Measure-Object -Maximum | Select-Object -ExpandProperty Maximum
+    $table_sum["minmax"] = $table["max"] | Measure-Object -Minimum | Select-Object -ExpandProperty Minimum
     $table_sum["avg"] = $table["avg"] | Measure-Object -Sum | Select-Object -ExpandProperty Sum
-    $str = "  AVG        " +
+    $table_sum["sumavg"] = $table["avg"] | Measure-Object -Sum | Select-Object -ExpandProperty Sum
+    $table_sum["minavg"] = $table["avg"] | Measure-Object -Minimum | Select-Object -ExpandProperty Minimum
+    $table_sum["maxavg"] = $table["avg"] | Measure-Object -Maximum | Select-Object -ExpandProperty Maximum
+    $table_sum["median"] = $table["median"] | Measure-Object -Sum | Select-Object -ExpandProperty Sum
+    $strAVG = "  AVG        " +
             " : $([math]::Round($table_sum['req'] / $table['req'].Count).ToString() )".PadRight(12) +
             " : $([math]::Round($table_sum['res'] / $table['res'].Count).ToString() )".PadRight(12) +
             " : $([math]::Round($table_sum['lost'] / $table['lost'].Count).ToString() )".PadRight(8) +
-            " : $($table_sum['lossloss'] )%".PadRight(8) +
+            " : $( $table_sum['sumloss'] )%".PadRight(8) +
             " : $([math]::Round($table_sum['min'] / $table['min'].Count) )ms".PadRight(10) +
             " : $([math]::Round($table_sum['max'] / $table['max'].Count) )ms".PadRight(10) +
-            " : $([math]::Round($table_sum['avg'] / $table['avg'].Count) )ms".PadRight(6)
-    Write-Host "------------------------------------------------------------------------------------------------------------"
-    Write-Host $str
-    Write-Host "  SUM/MIN/MAX : $($table_sum["req"].ToString().PadRight(7) )   : $($table_sum["res"].ToString().PadRight(6) )    : $($table_sum["lost"].ToString().PadRight(6) ): $(($table_sum["loss"].ToString() + "%").PadRight(6) ): $(($table_sum["minmin"].ToString() + "ms").PadRight(6) )  : $(($table_sum["maxmax"].ToString() + "ms").PadRight(6) )  : "
-    Write-Host "------------------------------------------------------------------------------------------------------------"
+            " : $([math]::Round($table_sum['avg'] / $table['avg'].Count) )ms".PadRight(10) +
+            " : $([math]::Round($table_sum['median'] / $table['median'].Count) )ms".PadRight(6)
+    $strMED = "  MED        " +
+            " : $(Get-Median $table['req'])".PadRight(12) +
+            " : $(Get-Median $table['res'])".PadRight(12) +
+            " : $(Get-Median $table['lost'])".PadRight(8) +
+            " : $(Get-Median $table['loss'])%".PadRight(8) +
+            " : $(Get-Median $table['min'])ms".PadRight(10) +
+            " : $(Get-Median $table['max'])ms".PadRight(10) +
+            " : $(Get-Median $table['avg'])ms".PadRight(10) +
+            " : $(Get-Median $table['median'])ms".PadRight(6)
+    $strSUM = "  SUM        " +
+            " : $($table_sum['req'].ToString().PadRight(9) )"+
+            " : $($table_sum['res'].ToString().PadRight(9) )"+
+            " : $($table_sum['lost'].ToString().PadRight(5) )"+
+            " : $(($table_sum['loss'].ToString() + '%').PadRight(5) )"+
+            " : $(($table_sum['min'].ToString() + 'ms').PadRight(7) )"+
+            " : $(($table_sum['max'].ToString() + 'ms').PadRight(7) )"+
+            " : $(($table_sum['avg'].ToString() + 'ms').PadRight(7) )"+
+            " : $(($table_sum['median'].ToString() + 'ms').PadRight(6) )"
+    $strMIN = "  MIN        " +
+            " : $($table_sum['minreq'].ToString().PadRight(9) )"+
+            " : $($table_sum['minres'].ToString().PadRight(9) )"+
+            " : $($table_sum['minlost'].ToString().PadRight(5) )"+
+            " : $(($table_sum['minloss'].ToString() + '%').PadRight(5) )"+
+            " : $(($table_sum['minmin'].ToString() + 'ms').PadRight(7) )"+
+            " : $(($table_sum['minmax'].ToString() + 'ms').PadRight(7) )"+
+            " : $(($table_sum['minavg'].ToString() + 'ms').PadRight(7) )"+
+            " : $(($table_sum['median'].ToString() + 'ms').PadRight(6) )"
+    $strMAX = "  MAX        " +
+            " : $($table_sum['maxreq'].ToString().PadRight(9) )"+
+            " : $($table_sum['maxres'].ToString().PadRight(9) )"+
+            " : $($table_sum['maxlost'].ToString().PadRight(5) )"+
+            " : $(($table_sum['maxloss'].ToString() + '%').PadRight(5) )"+
+            " : $(($table_sum['maxmin'].ToString() + 'ms').PadRight(7) )"+
+            " : $(($table_sum['maxmax'].ToString() + 'ms').PadRight(7) )"+
+            " : $(($table_sum['maxavg'].ToString() + 'ms').PadRight(7) )"+
+            " : $(($table_sum['median'].ToString() + 'ms').PadRight(6) )"
+    
+   
+    Write-Host "----------------------------------------------------------------------------------------------------------------------"
+    Write-Host $strAVG
+    Write-Host $strMED -ForegroundColor DarkGray
+    Write-Host $strMIN
+    Write-Host $strMAX -ForegroundColor DarkGray
+    Write-Host $strSUM
+#    Write-Host "  SUM         : $($table_sum["req"].ToString().PadRight(7) )   : $($table_sum["res"].ToString().PadRight(6) )    : $($table_sum["lost"].ToString().PadRight(6) ): $(($table_sum["loss"].ToString() + "%").PadRight(6) ): $(($table_sum["min"].ToString() + "ms").PadRight(6) )  : $(($table_sum["max"].ToString() + "ms").PadRight(6) )  : $(($table_sum["avg"].ToString() + "ms").PadRight(6) )  : $(($table_sum["median"].ToString() + "ms").PadRight(6) )"
+#    Write-Host "  MIN         : $($table_sum["minreq"].ToString().PadRight(8) )  : $($table_sum["minres"].ToString().PadRight(6) )    : $($table_sum["minlost"].ToString().PadRight(6) ): $(($table_sum["minloss"].ToString() + "%").PadRight(6) ): $(($table_sum["minmin"].ToString() + "ms").PadRight(6) )  : $(($table_sum["minmax"].ToString() + "ms").PadRight(6) )  : $(($table_sum["minavg"].ToString() + "ms").PadRight(6) )  : $(($table_sum["median"].ToString() + "ms").PadRight(6) )" -ForegroundColor DarkGray
+#    Write-Host "  MAX         : $($table_sum["maxreq"].ToString().PadRight(8) )  : $($table_sum["maxres"].ToString().PadRight(6) )    : $($table_sum["maxlost"].ToString().PadRight(6) ): $(($table_sum["maxloss"].ToString() + "%").PadRight(6) ): $(($table_sum["maxmin"].ToString() + "ms").PadRight(6) )  : $(($table_sum["maxmax"].ToString() + "ms").PadRight(6) )  : $(($table_sum["maxavg"].ToString() + "ms").PadRight(6) )  : $(($table_sum["median"].ToString() + "ms").PadRight(6) )"   
+    Write-Host "----------------------------------------------------------------------------------------------------------------------"
     Write-Host ""
 
     foreach ($i in $summary)
     {
         Write-Host $i
     }
+
     $datetime1 = [datetime]::ParseExact($all_results[0].starttime, "yyyy.MM.dd HH:mm:ss", $null)
     $datetime2 = [datetime]::ParseExact($all_results[-1].endtime, "yyyy.MM.dd HH:mm:ss", $null)
 
@@ -434,7 +444,7 @@ function Show-Resultload($all_results)
     }
     else
     {
-        Write-Host "Die Variable `$datetimeDifference enthält keine gültige TimeSpan."
+        Write-Host "The Variable `$datetimeDifference does not contain a valid TimeSpan."
     }
     Write-Host "  Start Time : $( $all_results[0].starttime )"
     Write-Host "  End Time   : $( $all_results[-1].endtime )"
@@ -443,6 +453,10 @@ function Show-Resultload($all_results)
     Write-Host "  Ping Time  : $( $all_results[0].pingtime ) seconds"
     Write-Host ""
 }
+
+# ------------------------------------------------------- #
+#                    Load from File                       #
+# ------------------------------------------------------- #
 
 function Select-File()
 {
@@ -479,6 +493,9 @@ function Select-File()
     }
 }
 
+# ------------------------------------------------------- #
+#                  Select Files to Merge                  #
+# ------------------------------------------------------- #
 
 function Select-Files()
 {
@@ -516,6 +533,10 @@ function Select-Files()
     }
 }
 
+# ------------------------------------------------------- #
+#                         Merge                           #
+# ------------------------------------------------------- #
+
 function Show-Merge($files)
 {
     # reverse array
@@ -530,10 +551,14 @@ function Show-Merge($files)
     }
     Show-Resultload -all_results $all_ping_results
     $datetime = Get-Date -Format "yyyy.MM.dd_HH-mm-ss"
-    $all_ping_results | ConvertTo-Json | Out-File -FilePath "ping_merged_results_$( $datetime ).json" -Encoding UTF8
+    #    $all_ping_results | ConvertTo-Json | Out-File -FilePath "merged_ping_results_$( $datetime ).json" -Encoding UTF8
     Write-Host "Merged as:"
-    Write-Host "ping_merged_results_$( $datetime ).json"
+    Write-Host "merged_ping_results_$( $datetime ).json in $( $logedin_user )\Downloads"
 }
+
+# ------------------------------------------------------- #
+#                         Split                           #
+# ------------------------------------------------------- #
 
 function Show-Split($file, $oldFilename)
 {
@@ -566,7 +591,6 @@ function Show-Split($file, $oldFilename)
         $modifiedContent | Set-Content -Path $filename
     }
 }
-
 
 
 # ------------------------------------------------------- #
@@ -617,6 +641,7 @@ elseif ($load_file -eq "g")
 }
 elseif ($load_file -eq "c")
 {
+    clear-host
     $file, $old_file_name = Select-File
     Clear-Host
     $all_ping_results += $file
@@ -649,7 +674,7 @@ elseif ($load_file -eq "c")
 }
 elseif (($load_file -eq "p") -or ($load_file -eq ""))
 {
-
+    clear-host
     $device_to_ping = Read-Host "Enter device to ping (default: $DEFAULT_DEVICE)`n>> "
     if ($device_to_ping -eq "")
     {
@@ -693,6 +718,8 @@ elseif (($load_file -eq "p") -or ($load_file -eq ""))
         {
             $datetime = Get-Date -Format "yyyy.MM.dd_HH-mm-ss"
             $name = "ping_results_$( $datetime ).json"
+            Write-Host "Saved as:"
+            Write-Host $name + " in $( $logedin_user )\Downloads"
             $all_ping_results | ConvertTo-Json | Out-File -FilePath $name -Encoding UTF8
             if ($all_ping_results.count -eq 1)
             {

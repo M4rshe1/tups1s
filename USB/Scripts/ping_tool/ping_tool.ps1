@@ -312,7 +312,9 @@ function Show-Resultload($all_results)
         "sumavg" = 0
         "minavg" = 0
         "maxavg" = 0
-        "median" = 0
+        "summedian" = 0
+        "minmedian" = 0
+        "maxmedian" = 0
     }
     foreach ($i in $all_results)
     {
@@ -364,7 +366,9 @@ function Show-Resultload($all_results)
     $table_sum["sumavg"] = $table["avg"] | Measure-Object -Sum | Select-Object -ExpandProperty Sum
     $table_sum["minavg"] = $table["avg"] | Measure-Object -Minimum | Select-Object -ExpandProperty Minimum
     $table_sum["maxavg"] = $table["avg"] | Measure-Object -Maximum | Select-Object -ExpandProperty Maximum
-    $table_sum["median"] = $table["median"] | Measure-Object -Sum | Select-Object -ExpandProperty Sum
+    $table_sum["summedian"] = $table["median"] | Measure-Object -Sum | Select-Object -ExpandProperty Sum
+    $table_sum["minmedian"] = $table["median"] | Measure-Object -Minimum | Select-Object -ExpandProperty Minimum
+    $table_sum["maxmedian"] = $table["median"] | Measure-Object -Maximum | Select-Object -ExpandProperty Maximum
     $strAVG = "  AVG        " +
             " : $([math]::Round($table_sum['req'] / $table['req'].Count).ToString() )".PadRight(12) +
             " : $([math]::Round($table_sum['res'] / $table['res'].Count).ToString() )".PadRight(12) +
@@ -391,7 +395,7 @@ function Show-Resultload($all_results)
             " : $(($table_sum['min'].ToString() + 'ms').PadRight(7) )"+
             " : $(($table_sum['max'].ToString() + 'ms').PadRight(7) )"+
             " : $(($table_sum['avg'].ToString() + 'ms').PadRight(7) )"+
-            " : $(($table_sum['median'].ToString() + 'ms').PadRight(6) )"
+            " : $(($table_sum['summedian'].ToString() + 'ms').PadRight(6) )"
     $strMIN = "  MIN        " +
             " : $($table_sum['minreq'].ToString().PadRight(9) )"+
             " : $($table_sum['minres'].ToString().PadRight(9) )"+
@@ -400,7 +404,7 @@ function Show-Resultload($all_results)
             " : $(($table_sum['minmin'].ToString() + 'ms').PadRight(7) )"+
             " : $(($table_sum['minmax'].ToString() + 'ms').PadRight(7) )"+
             " : $(($table_sum['minavg'].ToString() + 'ms').PadRight(7) )"+
-            " : $(($table_sum['median'].ToString() + 'ms').PadRight(6) )"
+            " : $(($table_sum['minmedian'].ToString() + 'ms').PadRight(6) )"
     $strMAX = "  MAX        " +
             " : $($table_sum['maxreq'].ToString().PadRight(9) )"+
             " : $($table_sum['maxres'].ToString().PadRight(9) )"+
@@ -409,7 +413,7 @@ function Show-Resultload($all_results)
             " : $(($table_sum['maxmin'].ToString() + 'ms').PadRight(7) )"+
             " : $(($table_sum['maxmax'].ToString() + 'ms').PadRight(7) )"+
             " : $(($table_sum['maxavg'].ToString() + 'ms').PadRight(7) )"+
-            " : $(($table_sum['median'].ToString() + 'ms').PadRight(6) )"
+            " : $(($table_sum['maxmedian'].ToString() + 'ms').PadRight(6) )"
     
    
     Write-Host "----------------------------------------------------------------------------------------------------------------------"

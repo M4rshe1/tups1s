@@ -120,7 +120,6 @@ function ping-device($dtp, $pd)
     $ping_results["avg"] = $ping_results["times"] | Where-Object { $_ -ne 0 } | Measure-Object -Average | Select-Object -ExpandProperty Average
     $ping_results["avg"] = [math]::Round($ping_results["avg"])
     $ping_results["median"] = Get-Median $ping_results["times"]
-    #    $ping_results | ConvertTo-Json | Out-File -FilePath "ping_results.json" -Encoding UTF8
     return $ping_results
 }
 
@@ -130,7 +129,7 @@ function ping-device($dtp, $pd)
 
 function Get-Median($data)
 {
-    $data = $data | Sort-Object -Descending
+    $data = $data | Where-Object { $_ -ne 0 }  | Sort-Object -Descending
     if ($data.count%2)
     {
         #odd
@@ -233,43 +232,7 @@ function Show-Resultload($all_results)
         }
         Write-Host ""
     }
-
-    #    Write-Host "`nResponse Graph in Real Time:`n(+/- 1000ms = 1 x #)"
-    #    foreach ($res in $all_results)
-    #    {
-    #        foreach ($i in $res.times)
-    #        {
-    #            if ($i -eq 0)
-    #            {
-    #                Write-Host "0000" -NoNewline -ForegroundColor Red
-    #            }
-    #            elseif ($i -lt 25)
-    #            {
-    #                Write-Host "#" -NoNewline -ForegroundColor Green
-    #            }
-    #            elseif ($i -lt 60)
-    #            {
-    #                Write-Host "#" -NoNewline -ForegroundColor Yellow
-    #            }
-    #            elseif ($i -lt 1000)
-    #            {
-    #                Write-Host "#" -NoNewline -ForegroundColor Red
-    #            }
-    #            elseif ($i -gt 1500)
-    #            {
-    #                Write-Host "##" -NoNewline -ForegroundColor Red
-    #            }
-    #            elseif ($i -lt 2500)
-    #            {
-    #                Write-Host "###" -NoNewline -ForegroundColor Red
-    #            }
-    #            else
-    #            {
-    #                Write-Host "####" -NoNewline -ForegroundColor Yellow
-    #            }
-    #        }
-    #        Write-Host ""
-    #    }
+    
     Write-Host ""
     Write-Host ""
     Write-Host "  Session     : Requests  : Respones  : Lost  : Loss  : Min     : Max     : Avg     : Median  : Start     : End       "
@@ -362,13 +325,14 @@ function Show-Resultload($all_results)
     $table_sum["summax"] = $table["max"] | Measure-Object -Sum | Select-Object -ExpandProperty Sum
     $table_sum["maxmax"] = $table["max"] | Measure-Object -Maximum | Select-Object -ExpandProperty Maximum
     $table_sum["minmax"] = $table["max"] | Measure-Object -Minimum | Select-Object -ExpandProperty Minimum
-    $table_sum["avg"] = $table["avg"] | Measure-Object -Sum | Select-Object -ExpandProperty Sum
-    $table_sum["sumavg"] = $table["avg"] | Measure-Object -Sum | Select-Object -ExpandProperty Sum
-    $table_sum["minavg"] = $table["avg"] | Measure-Object -Minimum | Select-Object -ExpandProperty Minimum
-    $table_sum["maxavg"] = $table["avg"] | Measure-Object -Maximum | Select-Object -ExpandProperty Maximum
-    $table_sum["summedian"] = $table["median"] | Measure-Object -Sum | Select-Object -ExpandProperty Sum
-    $table_sum["minmedian"] = $table["median"] | Measure-Object -Minimum | Select-Object -ExpandProperty Minimum
-    $table_sum["maxmedian"] = $table["median"] | Measure-Object -Maximum | Select-Object -ExpandProperty Maximum
+    $table_sum["avg"] = $table["avg"]  | Where-Object { $_ -ne 0 } | Measure-Object -Sum | Select-Object -ExpandProperty Sum
+    $table_sum["sumavg"] = $table["avg"] | Where-Object { $_ -ne 0 }  | Measure-Object -Sum | Select-Object -ExpandProperty Sum
+    $table_sum["minavg"] = $table["avg"] | Where-Object { $_ -ne 0 } | Measure-Object -Minimum | Select-Object -ExpandProperty Minimum
+    $table_sum["maxavg"] = $table["avg"] | Where-Object { $_ -ne 0 } | Measure-Object -Maximum | Select-Object -ExpandProperty Maximum
+    $table_sum["medavg"] = $table["avg"] | Where-Object { $_ -ne 0 } | Measure-Object -Average | Select-Object -ExpandProperty Average
+    $table_sum["summedian"] = $table["median"] | Where-Object { $_ -ne 0 } | Measure-Object -Sum | Select-Object -ExpandProperty Sum
+    $table_sum["minmedian"] = $table["median"] | Where-Object { $_ -ne 0 } | Measure-Object -Minimum | Select-Object -ExpandProperty Minimum
+    $table_sum["maxmedian"] = $table["median"] | Where-Object { $_ -ne 0 } | Measure-Object -Maximum | Select-Object -ExpandProperty Maximum
     $strAVG = "  AVG        " +
             " : $([math]::Round($table_sum['req'] / $table['req'].Count).ToString() )".PadRight(12) +
             " : $([math]::Round($table_sum['res'] / $table['res'].Count).ToString() )".PadRight(12) +
@@ -377,7 +341,7 @@ function Show-Resultload($all_results)
             " : $([math]::Round($table_sum['min'] / $table['min'].Count) )ms".PadRight(10) +
             " : $([math]::Round($table_sum['max'] / $table['max'].Count) )ms".PadRight(10) +
             " : $([math]::Round($table_sum['avg'] / $table['avg'].Count) )ms".PadRight(10) +
-            " : $([math]::Round($table_sum['median'] / $table['median'].Count) )ms".PadRight(6)
+            " : $([math]::Round($table_sum['medavg'] ))ms".PadRight(6)
     $strMED = "  MED        " +
             " : $(Get-Median $table['req'])".PadRight(12) +
             " : $(Get-Median $table['res'])".PadRight(12) +
@@ -422,9 +386,6 @@ function Show-Resultload($all_results)
     Write-Host $strMIN
     Write-Host $strMAX -ForegroundColor DarkGray
     Write-Host $strSUM
-#    Write-Host "  SUM         : $($table_sum["req"].ToString().PadRight(7) )   : $($table_sum["res"].ToString().PadRight(6) )    : $($table_sum["lost"].ToString().PadRight(6) ): $(($table_sum["loss"].ToString() + "%").PadRight(6) ): $(($table_sum["min"].ToString() + "ms").PadRight(6) )  : $(($table_sum["max"].ToString() + "ms").PadRight(6) )  : $(($table_sum["avg"].ToString() + "ms").PadRight(6) )  : $(($table_sum["median"].ToString() + "ms").PadRight(6) )"
-#    Write-Host "  MIN         : $($table_sum["minreq"].ToString().PadRight(8) )  : $($table_sum["minres"].ToString().PadRight(6) )    : $($table_sum["minlost"].ToString().PadRight(6) ): $(($table_sum["minloss"].ToString() + "%").PadRight(6) ): $(($table_sum["minmin"].ToString() + "ms").PadRight(6) )  : $(($table_sum["minmax"].ToString() + "ms").PadRight(6) )  : $(($table_sum["minavg"].ToString() + "ms").PadRight(6) )  : $(($table_sum["median"].ToString() + "ms").PadRight(6) )" -ForegroundColor DarkGray
-#    Write-Host "  MAX         : $($table_sum["maxreq"].ToString().PadRight(8) )  : $($table_sum["maxres"].ToString().PadRight(6) )    : $($table_sum["maxlost"].ToString().PadRight(6) ): $(($table_sum["maxloss"].ToString() + "%").PadRight(6) ): $(($table_sum["maxmin"].ToString() + "ms").PadRight(6) )  : $(($table_sum["maxmax"].ToString() + "ms").PadRight(6) )  : $(($table_sum["maxavg"].ToString() + "ms").PadRight(6) )  : $(($table_sum["median"].ToString() + "ms").PadRight(6) )"   
     Write-Host "----------------------------------------------------------------------------------------------------------------------"
     Write-Host ""
 

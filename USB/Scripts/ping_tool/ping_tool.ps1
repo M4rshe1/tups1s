@@ -130,6 +130,16 @@ function ping-device($dtp, $pd)
 function Get-Median($data)
 {
     $data = $data | Where-Object { $_ -ne 0 }  | Sort-Object -Descending
+    if ($data.count -eq 0)
+    {
+         return 0
+    }
+
+    if ($data.count -eq 1)
+    {
+        return $data[0]
+    }
+    
     if ($data.count%2)
     {
         #odd

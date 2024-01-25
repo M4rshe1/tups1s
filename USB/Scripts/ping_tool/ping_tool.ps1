@@ -687,12 +687,14 @@ elseif (($load_file -eq "p") -or ($load_file -eq ""))
         $all_ping_results += $all_pings
         Clear-Host
         #    Write-Host $all_ping_results
+        $datetime = Get-Date -Format "yyyy.MM.dd_HH-mm-ss"
+        $name = "ping_results_$( $datetime ).json"
         Show-Resultload -all_results $all_ping_results
+        $all_ping_results | ConvertTo-Json | Out-File -FilePath "temp_$($name)" -Encoding UTF8
         $redo = Read-Host "Defaul: [y] for redo, [n] for save and exit`n>> "
         if ($redo -eq "n")
         {
-            $datetime = Get-Date -Format "yyyy.MM.dd_HH-mm-ss"
-            $name = "ping_results_$( $datetime ).json"
+
             Write-Host "Saved as:"
             Write-Host "$($name) in \Users\$( $logedin_user )\Downloads"
             $all_ping_results | ConvertTo-Json | Out-File -FilePath $name -Encoding UTF8
@@ -704,7 +706,7 @@ elseif (($load_file -eq "p") -or ($load_file -eq ""))
             }
             break
         }
-
+        
         Clear-Host
     }
 }

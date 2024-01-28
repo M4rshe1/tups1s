@@ -110,7 +110,22 @@ function Show-print-status
     $global:statusState = ($global:statusState + 1) % $statusStates.Length
 }
 
-
+$banner = """
+   _____                            _   _                _____ _        _             
+  / ____|                          | | (_)              / ____| |      | |            
+ | |     ___  _ __  _ __   ___  ___| |_ _  ___  _ __   | (___ | |_ __ _| |_ _   _ ___ 
+ | |    / _ \| '_ \| '_ \ / _ \/ __| __| |/ _ \| '_ \   \___ \| __/ _' | __| | | / __|
+ | |___| (_) | | | | | | |  __/ (__| |_| | (_) | | | |  ____) | || (_| | |_| |_| \__ \
+  \_____\___/|_| |_|_| |_|\___|\___|\__|_|\___/|_| |_| |_____/ \__\__,_|\__|\__,_|___/
+        
+****************************************************************
+* Copyright of Colin Heggli $((Get-Date).Year))                             *
+* https://colin.heggli.dev                                     *
+* https://github.com/M4rshe1                                   *
+****************************************************************
+                                                                              
+"""
+Write-Host $banner
 Write-Host "Which IP should be monitored?"
 $pingip = Read-Host ">>"
 show-monitor

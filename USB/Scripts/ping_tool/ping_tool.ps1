@@ -7,7 +7,6 @@ Add-Type -AssemblyName System.Windows.Forms
 
 $DEFAULT_DEVICE = "google.com"
 $DEFAULT_PING_DURATION = "20"
-$BASE_API_URL = "https://api.heggli.dev/u/ping_graph"
 
 # ------------------------------------------------------- #
 #                        Functions                        #
@@ -132,14 +131,14 @@ function Get-Median($data)
     $data = $data | Where-Object { $_ -ne 0 }  | Sort-Object -Descending
     if ($data.count -eq 0)
     {
-         return 0
+        return 0
     }
 
     if ($data.count -eq 1)
     {
         return $data[0]
     }
-    
+
     if ($data.count%2)
     {
         #odd
@@ -242,7 +241,7 @@ function Show-Resultload($all_results)
         }
         Write-Host ""
     }
-    
+
     Write-Host ""
     Write-Host ""
     Write-Host "  Session     : Requests  : Respones  : Lost  : Loss  : Min     : Max     : Avg     : Median  : Start     : End       "
@@ -351,45 +350,45 @@ function Show-Resultload($all_results)
             " : $([math]::Round($table_sum['min'] / $table['min'].Count) )ms".PadRight(10) +
             " : $([math]::Round($table_sum['max'] / $table['max'].Count) )ms".PadRight(10) +
             " : $([math]::Round($table_sum['avg'] / $table['avg'].Count) )ms".PadRight(10) +
-            " : $([math]::Round($table_sum['medavg'] ))ms".PadRight(6)
+            " : $([math]::Round($table_sum['medavg']) )ms".PadRight(6)
     $strMED = "  MED        " +
-            " : $(Get-Median $table['req'])".PadRight(12) +
-            " : $(Get-Median $table['res'])".PadRight(12) +
-            " : $(Get-Median $table['lost'])".PadRight(8) +
-            " : $(Get-Median $table['loss'])%".PadRight(8) +
-            " : $(Get-Median $table['min'])ms".PadRight(10) +
-            " : $(Get-Median $table['max'])ms".PadRight(10) +
-            " : $(Get-Median $table['avg'])ms".PadRight(10) +
-            " : $(Get-Median $table['median'])ms".PadRight(6)
+            " : $( Get-Median $table['req'] )".PadRight(12) +
+            " : $( Get-Median $table['res'] )".PadRight(12) +
+            " : $( Get-Median $table['lost'] )".PadRight(8) +
+            " : $( Get-Median $table['loss'] )%".PadRight(8) +
+            " : $( Get-Median $table['min'] )ms".PadRight(10) +
+            " : $( Get-Median $table['max'] )ms".PadRight(10) +
+            " : $( Get-Median $table['avg'] )ms".PadRight(10) +
+            " : $( Get-Median $table['median'] )ms".PadRight(6)
     $strSUM = "  SUM        " +
-            " : $($table_sum['req'].ToString().PadRight(9) )"+
-            " : $($table_sum['res'].ToString().PadRight(9) )"+
-            " : $($table_sum['lost'].ToString().PadRight(5) )"+
-            " : $(($table_sum['loss'].ToString() + '%').PadRight(5) )"+
-            " : $(($table_sum['min'].ToString() + 'ms').PadRight(7) )"+
-            " : $(($table_sum['max'].ToString() + 'ms').PadRight(7) )"+
-            " : $(($table_sum['avg'].ToString() + 'ms').PadRight(7) )"+
+            " : $($table_sum['req'].ToString().PadRight(9) )" +
+            " : $($table_sum['res'].ToString().PadRight(9) )" +
+            " : $($table_sum['lost'].ToString().PadRight(5) )" +
+            " : $(($table_sum['loss'].ToString() + '%').PadRight(5) )" +
+            " : $(($table_sum['min'].ToString() + 'ms').PadRight(7) )" +
+            " : $(($table_sum['max'].ToString() + 'ms').PadRight(7) )" +
+            " : $(($table_sum['avg'].ToString() + 'ms').PadRight(7) )" +
             " : $(($table_sum['summedian'].ToString() + 'ms').PadRight(6) )"
     $strMIN = "  MIN        " +
-            " : $($table_sum['minreq'].ToString().PadRight(9) )"+
-            " : $($table_sum['minres'].ToString().PadRight(9) )"+
-            " : $($table_sum['minlost'].ToString().PadRight(5) )"+
-            " : $(($table_sum['minloss'].ToString() + '%').PadRight(5) )"+
-            " : $(($table_sum['minmin'].ToString() + 'ms').PadRight(7) )"+
-            " : $(($table_sum['minmax'].ToString() + 'ms').PadRight(7) )"+
-            " : $(($table_sum['minavg'].ToString() + 'ms').PadRight(7) )"+
+            " : $($table_sum['minreq'].ToString().PadRight(9) )" +
+            " : $($table_sum['minres'].ToString().PadRight(9) )" +
+            " : $($table_sum['minlost'].ToString().PadRight(5) )" +
+            " : $(($table_sum['minloss'].ToString() + '%').PadRight(5) )" +
+            " : $(($table_sum['minmin'].ToString() + 'ms').PadRight(7) )" +
+            " : $(($table_sum['minmax'].ToString() + 'ms').PadRight(7) )" +
+            " : $(($table_sum['minavg'].ToString() + 'ms').PadRight(7) )" +
             " : $(($table_sum['minmedian'].ToString() + 'ms').PadRight(6) )"
     $strMAX = "  MAX        " +
-            " : $($table_sum['maxreq'].ToString().PadRight(9) )"+
-            " : $($table_sum['maxres'].ToString().PadRight(9) )"+
-            " : $($table_sum['maxlost'].ToString().PadRight(5) )"+
-            " : $(($table_sum['maxloss'].ToString() + '%').PadRight(5) )"+
-            " : $(($table_sum['maxmin'].ToString() + 'ms').PadRight(7) )"+
-            " : $(($table_sum['maxmax'].ToString() + 'ms').PadRight(7) )"+
-            " : $(($table_sum['maxavg'].ToString() + 'ms').PadRight(7) )"+
+            " : $($table_sum['maxreq'].ToString().PadRight(9) )" +
+            " : $($table_sum['maxres'].ToString().PadRight(9) )" +
+            " : $($table_sum['maxlost'].ToString().PadRight(5) )" +
+            " : $(($table_sum['maxloss'].ToString() + '%').PadRight(5) )" +
+            " : $(($table_sum['maxmin'].ToString() + 'ms').PadRight(7) )" +
+            " : $(($table_sum['maxmax'].ToString() + 'ms').PadRight(7) )" +
+            " : $(($table_sum['maxavg'].ToString() + 'ms').PadRight(7) )" +
             " : $(($table_sum['maxmedian'].ToString() + 'ms').PadRight(6) )"
-    
-   
+
+
     Write-Host "----------------------------------------------------------------------------------------------------------------------"
     Write-Host $strAVG
     Write-Host $strMED -ForegroundColor DarkGray
@@ -514,21 +513,14 @@ function Select-Files()
 
 function Show-Merge($files)
 {
-    # reverse array
+    $ping_data = @()
     $files = $files | Sort-Object -Descending
-
     foreach ($file in $files)
     {
-        # convert to json
         $file_data = Get-Content -Path $file -Raw | ConvertFrom-Json
-        # add to array
-        $all_ping_results += $file_data
+        $ping_data += $file_data
     }
-    Show-Resultload -all_results $all_ping_results
-    $datetime = Get-Date -Format "yyyy.MM.dd_HH-mm-ss"
-    #    $all_ping_results | ConvertTo-Json | Out-File -FilePath "merged_ping_results_$( $datetime ).json" -Encoding UTF8
-    Write-Host "Merged as:"
-    Write-Host "merged_ping_results_$( $datetime ).json in \Users\$( $logedin_user )\Downloads"
+    return $ping_data
 }
 
 # ------------------------------------------------------- #
@@ -568,6 +560,109 @@ function Show-Split($file, $oldFilename)
 }
 
 
+Function Create-Menu()
+{
+
+    Param(
+        [Parameter(Mandatory = $True)][String]$MenuTitle,
+        [Parameter(Mandatory = $True)][array]$MenuOptions
+    )
+
+    $MaxValue = $MenuOptions.count - 1
+    $Selection = 0
+    $EnterPressed = $False
+
+    Clear-Host
+
+    While ($EnterPressed -eq $False)
+    {
+
+        Write-Host "$MenuTitle"
+
+        For ($i = 0; $i -le $MaxValue; $i++){
+
+            If ($i -eq $Selection)
+            {
+                Write-Host -BackgroundColor DarkGray -ForegroundColor White "[ $( $MenuOptions[$i] ) ]"
+            }
+            Else
+            {
+                Write-Host "  $( $MenuOptions[$i] )  "
+            }
+
+        }
+
+        $KeyInput = $host.ui.rawui.readkey("NoEcho,IncludeKeyDown").virtualkeycode
+
+        Switch ($KeyInput)
+        {
+            13{
+                $EnterPressed = $True
+                Return $Selection
+                Clear-Host
+                break
+            }
+
+            38{
+                If ($Selection -eq 0)
+                {
+                    $Selection = $MaxValue
+                }
+                Else
+                {
+                    $Selection -= 1
+                }
+                Clear-Host
+                break
+            }
+
+            40{
+                If ($Selection -eq $MaxValue)
+                {
+                    $Selection = 0
+                }
+                Else
+                {
+                    $Selection += 1
+                }
+                Clear-Host
+                break
+            }
+            Default{
+                Clear-Host
+            }
+        }
+    }
+}
+
+function Get-TimeInSeconds ($Time) {
+    if ($Time -eq "")
+    {
+        $Time = $DEFAULT_PING_DURATION
+    }
+    elseif ($Time -match "^\d+s$")
+    {
+        $Time = $Time -replace "s", ""
+        $Time = [int]$Time
+    }
+    elseif ($Time -match "^\d+m$")
+    {
+        $Time = $Time -replace "m", ""
+        $Time = [int]$Time * 60
+    }
+    elseif ([int]::TryParse($Time, [ref]$null))
+    {
+        $Time = [int]$Time
+    }
+    else
+    {
+        Read-Host "Invalid ping duration: $Time, exiting..."
+        exit
+    }
+    return $Time
+}
+
+
 # ------------------------------------------------------- #
 #                          Main                           #
 # ------------------------------------------------------- #
@@ -575,7 +670,7 @@ $logedin_user = whoami
 $logedin_user = $logedin_user.split("\")[1]
 Set-Location -Path "C:\Users\$( $logedin_user )\Downloads"
 Clear-Host
-Write-Host @'
+$banner = """
   _____ _               _______          _
  |  __ (_)             |__   __|        | |
  | |__) | _ __   __ _     | | ___   ___ | |
@@ -584,144 +679,126 @@ Write-Host @'
  |_|   |_|_| |_|\__, |    |_|\___/ \___/|_|
                  __/ |
                 |___/
-'@
-Write-Host ""
-Write-Host "****************************************************************"
-Write-Host "* Copyright of Colin Heggli 2023                               *"
-Write-Host "* https://colin.heggli.dev                                     *"
-Write-Host "* https://github.com/M4rshe1                                   *"
-Write-Host "****************************************************************"
-Write-Host ""
-Write-Host ""
-Write-Host "What would you like to do?"
-Write-Host "  p - ping device"
-Write-Host "  l - load ping results from file"
-Write-Host "  c - continue to ping"
-Write-Host "  g - generate graph"
-Write-Host "  m - merge ping results"
-Write-Host "  s - split results"
-$load_file = Read-Host ">> "
-$all_ping_results = @()
-if ($load_file -eq "l")
+                
+****************************************************************
+* Copyright of Colin Heggli $((Get-Date).Year))                             *
+* https://colin.heggli.dev                                     *
+* https://github.com/M4rshe1                                   *
+****************************************************************
+
+"""
+
+function main()
 {
-    $file, $old_file_name = Select-File
-    $all_ping_results += $file
-    Clear-Host
-    Show-Resultload -all_results $all_ping_results
-    Read-Host "Press enter to exit"
-}
-elseif ($load_file -eq "g")
-{
-    Start-Process "$( $BASE_API_URL )"
-}
-elseif ($load_file -eq "c")
-{
-    clear-host
-    $file, $old_file_name = Select-File
-    Clear-Host
-    $all_ping_results += $file
-    Read-Host "Press enter to continue"
-    while ($true)
+    $options = @("Ping Device", "Load Ping Results from File", "Continue to Ping", "Merge Ping Results", "Split Results")
+    $selection = Create-Menu -MenuTitle $banner -MenuOptions $options
+    $selection = $options[$selection]
+    $all_ping_results = @()
+    if ($selection -eq "Load Ping Results from File")
     {
-        $all_pings = ping-device $all_ping_results[0].device $all_ping_results[0].pingtime
-        $all_ping_results += $all_pings
+        $file, $old_file_name = Select-File
+        $all_ping_results += $file
         Clear-Host
-        #    Write-Host $all_ping_results
         Show-Resultload -all_results $all_ping_results
-        $redo = Read-Host "Default: [y] for redo, [n] for save and exit`n>> "
-        if ($redo -eq "n")
+        Read-Host "Press enter to exit"
+    }
+    elseif ($selection -eq "Continue to Ping")
+    {
+        clear-host
+        $file, $old_file_name = Select-File
+        Clear-Host
+        $all_ping_results += $file
+        Read-Host "Press enter to continue"
+        while ($true)
         {
+            $all_pings = ping-device $all_ping_results[0].device $all_ping_results[0].pingtime
+            $all_ping_results += $all_pings
+            Clear-Host
+            #    Write-Host $all_ping_results
+            Show-Resultload -all_results $all_ping_results
+            $redo = Read-Host "Default: [y] for redo, [n] for save and exit`n>> "
+            if ($redo -eq "n")
+            {
+                $datetime = Get-Date -Format "yyyy.MM.dd_HH-mm-ss"
+                Write-Host "Saved as:"
+                Write-Host "ping_results_$( $datetime ).json"
+                $name = "ping_results_$( $datetime ).json"
+                $all_ping_results | ConvertTo-Json | Out-File -FilePath $name -Encoding UTF8
+                if ($all_ping_results.count -eq 1)
+                {
+                    $jsonContent = Get-Content -Path $name | Out-String
+                    $modifiedContent = "[" + $jsonContent + "]"
+                    $modifiedContent | Set-Content -Path $name
+                }
+                break
+            }
+            Clear-Host
+        }
+    }
+    elseif ($selection -eq "Ping Device")
+    {
+
+        clear-host
+        $device_to_ping = Read-Host "Enter device to ping (default: $DEFAULT_DEVICE)`n>> "
+        if ($device_to_ping -eq "")
+        {
+            $device_to_ping = $DEFAULT_DEVICE
+        }
+        $ping_duration = Read-Host "Enter ping duration X, Xs or Xm (default: $DEFAULT_PING_DURATION)`n>> "
+        $ping_duration = Get-TimeInSeconds -Time $ping_duration
+
+        Clear-Host
+        while ($true)
+        {
+            $all_pings = ping-device $device_to_ping $ping_duration
+            $all_ping_results += $all_pings
+            Clear-Host
+            #    Write-Host $all_ping_results
             $datetime = Get-Date -Format "yyyy.MM.dd_HH-mm-ss"
-            Write-Host "Saved as:"
-            Write-Host "ping_results_$( $datetime ).json"
             $name = "ping_results_$( $datetime ).json"
-            $all_ping_results | ConvertTo-Json | Out-File -FilePath $name -Encoding UTF8
-            if ($all_ping_results.count -eq 1)
+            Show-Resultload -all_results $all_ping_results
+            $all_ping_results | ConvertTo-Json | Out-File -FilePath "temp_$( $name )" -Encoding UTF8
+            $redo = Read-Host "Defaul: [y] for redo, [n] for save and exit`n>> "
+            if ($redo -eq "n")
             {
-                $jsonContent = Get-Content -Path $name | Out-String
-                $modifiedContent = "[" + $jsonContent + "]"
-                $modifiedContent | Set-Content -Path $name
-            }
-            break
-        }
-        Clear-Host
-    }
-}
-elseif (($load_file -eq "p") -or ($load_file -eq ""))
-{
-    clear-host
-    $device_to_ping = Read-Host "Enter device to ping (default: $DEFAULT_DEVICE)`n>> "
-    if ($device_to_ping -eq "")
-    {
-        $device_to_ping = $DEFAULT_DEVICE
-    }
-    $ping_duration = Read-Host "Enter ping duration X, Xs or Xm (default: $DEFAULT_PING_DURATION)`n>> "
-    if ($ping_duration -eq "")
-    {
-        $ping_duration = $DEFAULT_PING_DURATION
-    }
-    if ($ping_duration -match "^\d+s$")
-    {
-        $ping_duration = $ping_duration -replace "s", ""
-        $ping_duration = [int]$ping_duration
-    }
-    elseif ($ping_duration -match "^\d+m$")
-    {
-        $ping_duration = $ping_duration -replace "m", ""
-        $ping_duration = [int]$ping_duration * 60
-    }
-    elseif ([int]::TryParse($ping_duration, [ref]$null))
-    {
-        $ping_duration = [int]$ping_duration
-    }
-    else
-    {
-        Write-Host "Invalid ping duration: $ping_duration"
-        exit
-    }
 
-    Clear-Host
-    while ($true)
+                Write-Host "Saved as:"
+                Write-Host "$( $name ) in \Users\$( $logedin_user )\Downloads"
+                $all_ping_results | ConvertTo-Json | Out-File -FilePath $name -Encoding UTF8
+                if ($all_ping_results.count -eq 1)
+                {
+                    $jsonContent = Get-Content -Path $name | Out-String
+                    $modifiedContent = "[" + $jsonContent + "]"
+                    $modifiedContent | Set-Content -Path $name
+                }
+                break
+            }
+
+            Clear-Host
+        }
+    }
+    elseif ($selection -eq "Merge Ping Results")
     {
-        $all_pings = ping-device $device_to_ping $ping_duration
-        $all_ping_results += $all_pings
-        Clear-Host
-        #    Write-Host $all_ping_results
+        Write-Host "Select files to merge"
+        Write-Host "*************************************"
+        Write-Host "* The sequence of the files matters *"
+        Write-Host "*************************************"
+        $files = Select-Files
+        $all_ping_results = Show-Merge -files $files
+        show-resultload -all_results $all_ping_results
         $datetime = Get-Date -Format "yyyy.MM.dd_HH-mm-ss"
-        $name = "ping_results_$( $datetime ).json"
-        Show-Resultload -all_results $all_ping_results
-        $all_ping_results | ConvertTo-Json | Out-File -FilePath "temp_$($name)" -Encoding UTF8
-        $redo = Read-Host "Defaul: [y] for redo, [n] for save and exit`n>> "
-        if ($redo -eq "n")
-        {
-
-            Write-Host "Saved as:"
-            Write-Host "$($name) in \Users\$( $logedin_user )\Downloads"
-            $all_ping_results | ConvertTo-Json | Out-File -FilePath $name -Encoding UTF8
-            if ($all_ping_results.count -eq 1)
-            {
-                $jsonContent = Get-Content -Path $name | Out-String
-                $modifiedContent = "[" + $jsonContent + "]"
-                $modifiedContent | Set-Content -Path $name
-            }
-            break
-        }
-        
-        Clear-Host
+        $name = "merged_ping_results_$( $datetime ).json"
+        Write-Host "Saved as:"
+        Write-Host "$( $name ) in \Users\$( $logedin_user )\Downloads"
+        $all_ping_results | ConvertTo-Json | Out-File -FilePath $name -Encoding UTF8
+    }
+    elseif ($selection -eq "Split Results")
+    {
+        $file, $old_file_name = Select-File
+        Show-Split -file $file -oldFilename $old_file_name
     }
 }
-elseif ($load_file -eq "m")
-{
-    Write-Host "Select files to merge"
-    Write-Host "*************************************"
-    Write-Host "* The sequence of the files matters *"
-    Write-Host "*************************************"
-    $files = Select-Files
-    Show-Merge -files $files
-}
-elseif ($load_file -eq "s")
-{
-    $file, $old_file_name = Select-File
-    Show-Split -file $file -oldFilename $old_file_name
-}
+
+main
+
 

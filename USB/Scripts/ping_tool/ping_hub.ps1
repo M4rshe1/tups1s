@@ -9,7 +9,7 @@ $banner = """
                 |___/
                 
 ****************************************************************
-* Copyright of Colin Heggli $($CURRENT_YEAR))                               *    
+* Copyright of Colin Heggli $( $CURRENT_YEAR ))                               *    
 * https://colin.heggli.dev                                     *
 * https://github.com/M4rshe1                                   *
 ****************************************************************
@@ -89,10 +89,12 @@ Function Create-Menu()
         }
     }
 }
-$options = @("Ping Tool", "Powershell NMAP", "Connection Status", "Exit")
-Function main() {
+Function main()
+{
+    $options = @("Ping Tool", "Powershell NMAP", "Connection Status", "Exit")
     $selection = Create-Menu -MenuTitle $banner -MenuOptions $options
-    switch ($selection) {
+    switch ($selection)
+    {
         0 {
             Clear-Host
             irm "https://raw.githubusercontent.com/M4rshe1/tups1s/master/USB/Scripts/ping_tool/ping_tool.ps1" | iex
@@ -115,3 +117,5 @@ Function main() {
         }
     }
 }
+
+main

@@ -2,7 +2,7 @@ $banner = """
   ____                           _          _ _   _   _ __  __          _____  
  |  __ \                         | |        | | | | \ | |  \/  |   /\   |  __ \ 
  | |__) |____      _____ _ __ ___| |__   ___| | | |  \| | \  / |  /  \  | |__) |
- |  ___/ _ \ \ /\ / / _ \ '__/ __| '_ \ / _ \ | | | . ` | |\/| | / /\ \ |  ___/ 
+ |  ___/ _ \ \ /\ / / _ \ '__/ __| '_ \ / _ \ | | | . ' | |\/| | / /\ \ |  ___/ 
  | |  | (_) \ V  V /  __/ |  \__ \ | | |  __/ | | | |\  | |  | |/ ____ \| |     
  |_|   \___/ \_/\_/ \___|_|  |___/_| |_|\___|_|_| |_| \_|_|  |_/_/    \_\_|     
                                                                                           
@@ -12,7 +12,10 @@ $banner = """
 * https://github.com/M4rshe1                                   *
 ****************************************************************
 
-Single IP: 192.168.1.6 or heggli.dev or 192.168.1.0/24 
+"""
+
+$banner2 = """
+IP: 192.168.1.6 or heggli.dev or 192.168.1.0/24 
 
 Ports: 80 or 1-100 or 80,443,8080 or all
 
@@ -24,6 +27,7 @@ function Get-Answer($question)
 {
     clear-host
     Write-Host $banner
+    Write-Host $banner2
     Write-Host $question
     $answer = Read-Host ">>"
     return $answer
@@ -38,12 +42,50 @@ function Save-Data($data)
     Set-Location -Path "C:\Users\$( $logedin_user )\Downloads"
     Write-Host "Saved as:"
     Write-Host "$( $name ) in \Users\$( $logedin_user )\Downloads"
-    $all_ping_results | ConvertTo-Json | Out-File -FilePath $name -Encoding UTF8
+    $data | ConvertTo-Json -Depth 100 | Out-File -FilePath $name -Encoding UTF8
 }
 
-function show-results($data)
+function Show-FormattedResults($data, $ip)
 {
-    $data | Format-Table -AutoSize
+    Write-Host "Interesting ports on $($ip)"
+    Write-Host "$('PORT'.PadRight(10))$('STATE'.PadRight(10))$('SERVICE'.PadRight(30))"
+
+    foreach ($item in $data) {
+        $port = $item.port
+        $status = $item.status
+        $service = $item.service
+
+        Write-Host "$port".PadRight(10) -NoNewline
+        if ($status -eq "open")
+        {
+            Write-Host "$status".PadRight(10) -NoNewline -ForegroundColor Green
+        }
+        else
+        {
+            Write-Host "$status".PadRight(10) -NoNewline -ForegroundColor Red
+        }
+        Write-Host "$service".PadRight(10)
+    }
+
+    Write-Host ""
+}
+
+function Show-Results($data)
+{
+    Clear-Host
+    $settings = $data.settings
+    $data = $data.data
+
+    if ($data.Count -eq 0) {
+        Write-Host "No open ports found"
+        exit
+    }
+
+    Write-Host "Started at: $($settings.time.start) - Ended at: $($settings.time.end) - Duration: $($settings.time.duration) seconds"
+
+    foreach ($ip in $data.Keys) {
+        Show-FormattedResults $data[$ip] $ip
+    }
 }
 
 function get-formatedIP($ip)
@@ -70,7 +112,6 @@ function get-formatedPorts($ports_input)
     {
         $ports = $ports_input.split("-")
         $ports = $ports[0]..$ports[1]
-        $ports = $ports | sort-object -Unique -Descending
     }
     elseif ($ports_input.contains(","))
     {
@@ -80,6 +121,8 @@ function get-formatedPorts($ports_input)
     {
         $ports = @($ports_input)
     }
+    $ports = $ports | sort-object -Unique
+    $ports = $ports | Where-Object {$_ -ge 1 -and $_ -le 65535}
     return $ports
 }
 function Get-IpRange
@@ -177,30 +220,49 @@ function scan-ipRange($ipRange, $portList, $services)
 {
     $ipRange = get-formatedIP($ipRange)
     $portList = get-formatedPorts($portList)
-    $data = @()
+    $data = @{}
+    $max_loops = $ipRange.count * $portList.count
+    $counter = 0
     if ($services -eq "n")
     {
         $ipRange | ForEach-Object {
             $ip = $_
+            $data.$ip = @()
             $portList | ForEach-Object {
+                $counter += 1
+                Write-Host "Scanning $ip on port $_ [$counter/$max_loops]" -NoNewline
                 $port = $_
-#                Write-Host "Scanning $ip on port $port"
-                $result = Test-NetConnection -ComputerName $ip -Port $port -InformationLevel Quiet -WarningAction SilentlyContinue
-                if ($result -eq $true)
-                {
+                $obj = new-Object system.Net.Sockets.TcpClient
+                $connect = $obj.BeginConnect($ip,$port,$null,$null)
+                $Wait = $connect.AsyncWaitHandle.WaitOne(100,$false)
+                If (-Not $Wait) {
+                    $obj.Close()
+                    $status = "closed"
+                    write-host " - #" -ForegroundColor Red
+                }
+                else {
+                    $obj.EndConnect($connect) | Out-Null
                     $status = "open"
+                    write-host " - #" -ForegroundColor Green
                 }
-                else
-                {
-                    #                    $status = "closed"
-                    continue
+#                $result = Test-NetConnection -ComputerName $ip -Port $port -InformationLevel Quiet -ErrorAction Stop -WarningAction SilentlyContinue
+#                if ($result -eq $true)
+#                {
+#                    $status = "open"
+#                    write-host " - #" -ForegroundColor Green
+#                }
+#                else
+#                {
+#                    $status = "closed"
+#                    write-host " - #" -ForegroundColor Red
+#                }
+                $data.$ip += @{
+                    date = Get-Date -Format "yyyy.MM.dd_HH-mm-ss"
+                    port = $port
+                    status = $status
+                    service = ""
                 }
-                $data += @{
-                    Date = Get-Date -Format "yyyy.MM.dd_HH-mm-ss"
-                    IP = $ip
-                    Port = $port
-                    Status = $status
-                }
+
             }
         }
     }
@@ -208,17 +270,34 @@ function scan-ipRange($ipRange, $portList, $services)
     {
         $ipRange | ForEach-Object {
             $ip = $_
+            $data.$ip = @()
             $portList | ForEach-Object {
+                $counter += 1
+                Write-Host "Scanning $ip on port $_ [$counter/$max_loops]" -NoNewline
                 $port = $_
-                $result = Test-NetConnection -ComputerName $ip -Port $port -InformationLevel Quiet -WarningAction SilentlyContinue
-                if ($result -eq $true)
-                {
-                    $status = "open"
+#                $result = Test-NetConnection -ComputerName $ip -Port $port -InformationLevel Quiet -ErrorAction Stop -WarningAction SilentlyContinue
+#                if ($result -eq $true)
+#                {
+#                    $status = "open"
+#                    write-host " - #" -ForegroundColor Green
+#                }
+#                else
+#                {
+#                    $status = "closed"
+#                    write-host " - #" -ForegroundColor Red
+#                }
+                $obj = new-Object system.Net.Sockets.TcpClient
+                $connect = $obj.BeginConnect($ip,$port,$null,$null)
+                $Wait = $connect.AsyncWaitHandle.WaitOne(100,$false)
+                If (-Not $Wait) {
+                    $obj.Close()
+                    $status = "closed"
+                    write-host " - #" -ForegroundColor Red
                 }
-                else
-                {
-                    #                    $status = "closed"
-                    continue
+                else {
+                    $obj.EndConnect($connect) | Out-Null
+                    $status = "open"
+                    write-host " - #" -ForegroundColor Green
                 }
                 $service = Get-Service -ComputerName $ip -Name $port -ErrorAction SilentlyContinue
                 if ($null -eq $service)
@@ -229,45 +308,222 @@ function scan-ipRange($ipRange, $portList, $services)
                 {
                     $service = $service.DisplayName
                 }
-
-                $data += @{
-                    Date = Get-Date -Format "yyyy.MM.dd_HH-mm-ss"
-                    IP = $ip
-                    Port = $port
-                    Status = $status
-                    Service = $service
+                $date = Get-Date -Format "yyyy.MM.dd_HH-mm-ss"
+                $data.$ip += @{
+                    date = $date
+                    port = $port
+                    status = $status
+                    service = $service
                 }
             }
         }
     }
+    Write-Host "Scan finished"
     return $data
+}
+
+
+Function Create-Menu()
+{
+
+    Param(
+        [Parameter(Mandatory = $True)][String]$MenuTitle,
+        [Parameter(Mandatory = $True)][array]$MenuOptions
+    )
+
+    $MaxValue = $MenuOptions.count - 1
+    $Selection = 0
+    $EnterPressed = $False
+
+    Clear-Host
+
+    While ($EnterPressed -eq $False)
+    {
+
+        Write-Host "$MenuTitle"
+
+        For ($i = 0; $i -le $MaxValue; $i++){
+
+            If ($i -eq $Selection)
+            {
+                Write-Host -BackgroundColor DarkGray -ForegroundColor White "[ $( $MenuOptions[$i] ) ]"
+            }
+            Else
+            {
+                Write-Host "  $( $MenuOptions[$i] )  "
+            }
+
+        }
+
+        $KeyInput = $host.ui.rawui.readkey("NoEcho,IncludeKeyDown").virtualkeycode
+
+        Switch ($KeyInput)
+        {
+            13{
+                $EnterPressed = $True
+                Return $Selection
+                Clear-Host
+                break
+            }
+
+            38{
+                If ($Selection -eq 0)
+                {
+                    $Selection = $MaxValue
+                }
+                Else
+                {
+                    $Selection -= 1
+                }
+                Clear-Host
+                break
+            }
+
+            40{
+                If ($Selection -eq $MaxValue)
+                {
+                    $Selection = 0
+                }
+                Else
+                {
+                    $Selection += 1
+                }
+                Clear-Host
+                break
+            }
+            Default{
+                Clear-Host
+            }
+        }
+    }
+}
+
+function Select-File()
+{
+    # Create a File Open dialog box
+    $openFileDialog = New-Object System.Windows.Forms.OpenFileDialog
+    $openFileDialog.Filter = "Json files (*.json)|*.json|All files (*.*)|*.*"
+
+    # Set the default folder to the user's Downloads folder
+    $downloadsFolder = [System.Environment]::GetFolderPath('MyDocuments') + '\Downloads'
+    $openFileDialog.InitialDirectory = $downloadsFolder
+
+    # Show the dialog and check if the user selects a file
+    $result = $openFileDialog.ShowDialog()
+
+    # Check if the user clicked the OK button in the dialog
+    if ($result -eq [System.Windows.Forms.DialogResult]::OK)
+    {
+        # Get the selected file path
+        $selectedFile = $openFileDialog.FileName
+        # Now you can do something with the selected file, e.g., open it
+        # For example, let's just display the selected file path
+        Write-Host "Selected File: $selectedFile"
+        $jsonContent = Get-Content -Path $selectedFile -Raw
+        $jsonObject = $jsonContent | ConvertFrom-Json
+        #        Write-Host $selectedFile
+        #        Write-Host $selectedFile.Split("\")[-1].Split(".")[0]
+        return $jsonObject,$selectedFile.Split("\")[-1].Replace(".json", "").Replace(".", "")
+    }
+    else
+    {
+        Write-Host "No file selected."
+        Read-Host "Press Enter to exit..."
+        exit
+    }
 }
 
 function main()
 {
-    $ip = Get-Answer "Which IP or IP range should be scanned?"
-    $port = Get-Answer "Which port(s) should be scanned?"
-    $services = Get-Answer "Should the services be scanned? (y/n)"
-    if ($services -eq "y")
+    $options = @("New Scan", "Load Scan", "Scann with previous Settings", "Discover", "Exit")
+    $selection = Create-Menu -MenuTitle $banner -MenuOptions $options
+    $selection = $options[$selection]
+    if ($selection -eq "New Scan")
     {
-        $services = "y"
+        $ip = Get-Answer "Enter IP or IP range"
+        $port = Get-Answer "Enter ports to scan"
+        $services = Get-Answer "Should the services be scanned? (y/n)"
+        if ($services -eq "y")
+        {
+            $services = "y"
+        }
+        else
+        {
+            $services = "n"
+        }
+        clear-host
+        $start = Get-Date
+        $data = scan-ipRange $ip $port $services
+        $end = Get-Date
+        $duration = [math]::Round($end.Subtract($start).TotalMilliseconds / 1000, 4)
+        
+        $start = $start.ToString("yyyy.MM.dd_HH-mm-ss")
+        $end = $end.ToString("yyyy.MM.dd_HH-mm-ss")
+        
+        clear-host
+        $dict = @{
+            "settings" = @{
+                "ip" = $ip
+                "port" = $port
+                "services" = $services
+                "time" = @{
+                    "start" = $start
+                    "end" = $end
+                    "duration" = $duration
+                }
+            }
+            "data" = $data
+        }
+        show-results $dict
+        Save-Data $dict
+    }
+    elseif ($selection -eq "Load Scan")
+    {
+        $data, $name = Select-File
+        Write-Host "Results:"
+        show-results $dict
+    }
+    elseif ("Scann with previous Settings")
+    {
+        $data, $name = Select-File
+        $ip = $data.settings.ip
+        $port = $data.settings.port
+        $services = $data.settings.services
+        clear-host
+        $start = Get-Date -Format "yyyy.MM.dd_HH-mm-ss"
+        $data = scan-ipRange $ip $port $services
+        $end = Get-Date -Format "yyyy.MM.dd_HH-mm-ss"
+        $duration = [math]::Round($end.Subtract($start).TotalMilliseconds / 1000, 4)
+
+        $start = $start.ToString("yyyy.MM.dd_HH-mm-ss")
+        $end = $end.ToString("yyyy.MM.dd_HH-mm-ss")
+
+        clear-host
+        $dict = @{
+            "settings" = @{
+                "ip" = $ip
+                "port" = $port
+                "services" = $services
+                "time" = @{
+                    "start" = $start
+                    "end" = $end
+                    "duration" = $duration
+                }
+            }
+            "data" = $data
+        }
+        show-results $dict
+        Save-Data $dict
+    }
+    elseif ($selection -eq "Discover")
+    {
+
     }
     else
     {
-        $services = "n"
+        exit
     }
-    $data = scan-ipRange $ip $port $services
-    Write-Host "Results:"
-    show-results $data
-    $dict = @{
-        "settings" = @{
-            "ip" = $ip
-            "port" = $port
-            "services" = $services
-        }
-        "data" = $data
-    }
-    Save-Data $dict
+    Read-Host "Press Enter to exit..."
 }
 
 main

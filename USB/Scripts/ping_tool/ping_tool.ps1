@@ -681,7 +681,7 @@ $banner = """
                 |___/
                 
 ****************************************************************
-* Copyright of Colin Heggli $((Get-Date).Year))                             *
+* Copyright of Colin Heggli $((Get-Date).Year)                               *
 * https://colin.heggli.dev                                     *
 * https://github.com/M4rshe1                                   *
 ****************************************************************
@@ -690,7 +690,7 @@ $banner = """
 
 function main()
 {
-    $options = @("Ping Device", "Load Ping Results from File", "Continue to Ping", "Merge Ping Results", "Split Results")
+    $options = @("Ping Device", "Load Ping Results from File", "Continue to Ping", "Merge Ping Results", "Split Results", "Exit")
     $selection = Create-Menu -MenuTitle $banner -MenuOptions $options
     $selection = $options[$selection]
     $all_ping_results = @()
@@ -796,6 +796,11 @@ function main()
     {
         $file, $old_file_name = Select-File
         Show-Split -file $file -oldFilename $old_file_name
+        Show-Split -file $file -oldFilename $old_file_name
+    }
+    elseif ($selection -eq "Exit")
+    {
+        exit
     }
 }
 
